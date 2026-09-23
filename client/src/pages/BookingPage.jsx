@@ -1,15 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import React, { useState } from 'react';
 import { useBooking } from '../context/BookingContext';
-import { createBooking, initializePayment, verifyPayment } from '../services/api';
-import confetti from 'canvas-confetti';
 import { 
-  Check, ChevronRight, ChevronLeft, Calendar as CalendarIcon, Users, Crown, 
-  Sparkles, ShieldCheck, CreditCard, Lock, PartyPopper, AlertCircle, CheckCircle2 
+  Check, ChevronRight, ChevronLeft, Crown, 
+  Sparkles, Lock, MessageCircle, Wrench, Phone, ArrowUpRight
 } from 'lucide-react';
 
 export default function BookingPage() {
-  const [searchParams] = useSearchParams();
   const {
     currentStep,
     nextStep,
@@ -31,30 +27,33 @@ export default function BookingPage() {
     customerInfo,
     setCustomerInfo,
     calculation,
-    isCalculating,
     formatCurrency
   } = useBooking();
 
-  const [submitting, setSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [verifiedBooking, setVerifiedBooking] = useState(null);
+  // Build a pre-filled WhatsApp message from the current booking selections
+  const buildWhatsAppMessage = () => {
+    const lines = [
+      '🏛️ *SUCRE Events Centre — Manual Booking Request*',
+      '',
+      `👤 *Name:* ${customerInfo.name || '(not provided)'}`,
+      `📱 *Phone:* ${customerInfo.phone || '(not provided)'}`,
+      `📧 *Email:* ${customerInfo.email || '(not provided)'}`,
+      `📅 *Event Date:* ${customerInfo.eventDate || '(not provided)'}`,
+      `🎉 *Event Type:* ${selectedEventType}`,
+      `👥 *Guests:* ${guestCount}`,
+      `🏟️ *Hall:* ${selectedHall?.name || ''}  (Grade ${selectedHall?.grade || ''})`,
+      `✨ *Package:* ${selectedPackage?.name || ''} (${selectedPackage?.tier || ''} Tier)`,
+      `💰 *Estimated Total:* ${formatCurrency(calculation?.subtotal || (selectedHall?.basePrice || 0) + (selectedPackage?.price || 0))}`,
+      `🔒 *50% Deposit:* ${formatCurrency(calculation?.depositAmount || Math.ceil(((selectedHall?.basePrice || 0) + (selectedPackage?.price || 0)) / 2))}`,
+      '',
+      customerInfo.notes ? `📝 *Notes:* ${customerInfo.notes}` : '',
+      '',
+      'Kindly confirm availability and send payment details. Thank you!',
+    ];
+    return encodeURIComponent(lines.filter(l => l !== undefined).join('\n'));
+  };
 
-  // Check URL params for returned Paystack payment status
-  useEffect(() => {
-    const refParam = searchParams.get('reference');
-    const statusParam = searchParams.get('status');
-
-    if (refParam && statusParam === 'success') {
-      verifyPayment({ bookingReference: refParam })
-        .then(res => {
-          if (res.data.success) {
-            setVerifiedBooking(res.data.data.booking);
-            confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
-          }
-        })
-        .catch(err => console.error('Verification error:', err));
-    }
-  }, [searchParams]);
+  const whatsAppHref = `https://wa.me/2348174303757?text=${buildWhatsAppMessage()}`;
 
   const eventTypes = [
     { name: 'Wedding Ceremony & Reception', icon: '💍', description: 'Royal wedding banquets & bridal showcases' },
@@ -64,115 +63,9 @@ export default function BookingPage() {
     { name: 'Exhibition & Trade Expo', icon: '🎨', description: 'Spacious floor layouts & product launches' },
   ];
 
-  const handleCheckout = async (e) => {
-    e.preventDefault();
-    setErrorMessage('');
 
-    if (!customerInfo.name || !customerInfo.email || !customerInfo.phone || !customerInfo.eventDate) {
-      setErrorMessage('Please fill in all contact and event date fields.');
-      return;
-    }
 
-    try {
-      setSubmitting(true);
-      // 1. Create booking record on server
-      const bookingRes = await createBooking({
-        customerName: customerInfo.name,
-        customerEmail: customerInfo.email,
-        customerPhone: customerInfo.phone,
-        eventType: selectedEventType,
-        guestCount,
-        eventDate: customerInfo.eventDate,
-        hallId: selectedHall.id,
-        packageId: selectedPackage.id,
-        addonIds: selectedAddonIds,
-        notes: customerInfo.notes,
-      });
 
-      const newBooking = bookingRes.data.data;
-
-      // 2. Initialize Paystack checkout
-      const payRes = await initializePayment({
-        bookingId: newBooking.id,
-        email: customerInfo.email,
-        amount: newBooking.depositAmount,
-      });
-
-      if (payRes.data.data && payRes.data.data.authorization_url) {
-        // Redirect to Paystack secure inline checkout page
-        window.location.href = payRes.data.data.authorization_url;
-      } else {
-        // Direct verification fallback
-        const verifyRes = await verifyPayment({ bookingReference: newBooking.reference });
-        setVerifiedBooking(verifyRes.data.data.booking);
-        confetti({ particleCount: 150, spread: 100 });
-      }
-    } catch (err) {
-      console.error('Checkout error:', err);
-      setErrorMessage(err.response?.data?.error || 'Checkout process failed. Please try again.');
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  // SUCCESS CONFIRMATION VIEW
-  if (verifiedBooking) {
-    return (
-      <div className="min-h-[80vh] flex items-center justify-center px-4 py-16">
-        <div className="max-w-2xl w-full bg-cathedral-card border border-gold-400 rounded-3xl p-8 md:p-12 text-center space-y-6 shadow-gold-glow relative overflow-hidden">
-          <div className="w-20 h-20 rounded-full bg-gold-400/20 text-gold-400 mx-auto flex items-center justify-center border border-gold-400/50">
-            <PartyPopper className="w-10 h-10" />
-          </div>
-
-          <div className="space-y-2">
-            <span className="text-xs uppercase font-bold tracking-[0.2em] text-emerald-400">
-              50% Deposit Payment Verified
-            </span>
-            <h1 className="text-3xl md:text-4xl font-serif font-bold text-cathedral-ivory">
-              Your Date is Secured!
-            </h1>
-            <p className="text-xs text-cathedral-muted">
-              Booking Reference: <span className="font-mono text-gold-300 font-bold">{verifiedBooking.reference}</span>
-            </p>
-          </div>
-
-          <div className="bg-cathedral-bg/80 border border-cathedral-border rounded-2xl p-6 text-left text-xs space-y-3">
-            <div className="flex justify-between border-b border-cathedral-border pb-2">
-              <span className="text-cathedral-muted">Client Name:</span>
-              <span className="font-semibold text-cathedral-ivory">{verifiedBooking.customerName}</span>
-            </div>
-            <div className="flex justify-between border-b border-cathedral-border pb-2">
-              <span className="text-cathedral-muted">Event Date:</span>
-              <span className="font-semibold text-gold-300">{new Date(verifiedBooking.eventDate).toLocaleDateString()}</span>
-            </div>
-            <div className="flex justify-between border-b border-cathedral-border pb-2">
-              <span className="text-cathedral-muted">Reserved Hall:</span>
-              <span className="font-semibold text-cathedral-ivory">{verifiedBooking.hall?.name}</span>
-            </div>
-            <div className="flex justify-between border-b border-cathedral-border pb-2">
-              <span className="text-cathedral-muted">Deposit Paid (50%):</span>
-              <span className="font-bold text-emerald-400">{formatCurrency(verifiedBooking.depositAmount)}</span>
-            </div>
-            <div className="flex justify-between pt-1">
-              <span className="text-cathedral-muted">Remaining Balance (Due 14 Days Prior):</span>
-              <span className="font-bold text-gold-gradient">{formatCurrency(verifiedBooking.balanceAmount)}</span>
-            </div>
-          </div>
-
-          <div className="text-xs text-cathedral-muted">
-            Our Chief Event Concierge will contact you within 24 hours at <span className="text-gold-300">{verifiedBooking.customerPhone}</span> to finalize layout setup.
-          </div>
-
-          <button
-            onClick={() => window.location.href = '/'}
-            className="px-8 py-3.5 rounded-full bg-gold-gradient text-cathedral-bg font-bold text-xs uppercase tracking-widest hover:brightness-110 transition-all"
-          >
-            Return to Home Overview
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-cathedral-bg text-cathedral-ivory py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-12">
@@ -476,31 +369,39 @@ export default function BookingPage() {
             </div>
           )}
 
-          {/* STEP 5: CHECKOUT & CUSTOMER INFO */}
+          {/* STEP 5: CHECKOUT — MANUAL BOOKING VIA WHATSAPP (Payment gateway under maintenance) */}
           {currentStep === 5 && (
-            <form onSubmit={handleCheckout} className="space-y-6">
+            <div className="space-y-6">
               <div>
                 <h2 className="text-2xl font-serif font-bold text-cathedral-ivory">
-                  Step 5: Client Information & Date Lock
+                  Step 5: Complete Your Details & Book
                 </h2>
                 <p className="text-xs text-cathedral-muted mt-1">
-                  Enter host contact details to generate your reservation code and proceed to 50% deposit checkout.
+                  Fill in your details below, then send them directly to our concierge via WhatsApp to lock in your date.
                 </p>
               </div>
 
-              {errorMessage && (
-                <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 shrink-0" />
-                  <span>{errorMessage}</span>
+              {/* ── Maintenance Notice ── */}
+              <div className="p-5 rounded-2xl bg-amber-500/10 border border-amber-400/40 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                <div className="w-10 h-10 rounded-full bg-amber-400/20 border border-amber-400/40 flex items-center justify-center shrink-0">
+                  <Wrench className="w-5 h-5 text-amber-400" />
                 </div>
-              )}
+                <div className="space-y-1">
+                  <div className="text-amber-300 font-bold text-sm flex items-center gap-2">
+                    Online Payment Gateway — Under Maintenance
+                  </div>
+                  <p className="text-xs text-amber-200/70 leading-relaxed">
+                    Our Paystack checkout is currently undergoing scheduled maintenance. Kindly complete your booking manually by sending your details to our WhatsApp concierge line and we will process your reservation immediately.
+                  </p>
+                </div>
+              </div>
 
+              {/* ── Customer Detail Form ── */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                 <div className="space-y-1.5">
-                  <label className="font-semibold text-cathedral-ivory">Full Name / Organization *</label>
+                  <label className="font-semibold text-cathedral-ivory">Full Name / Organization</label>
                   <input
                     type="text"
-                    required
                     placeholder="e.g. Chief Adebayo Adeleke"
                     value={customerInfo.name}
                     onChange={(e) => setCustomerInfo({ ...customerInfo, name: e.target.value })}
@@ -509,10 +410,9 @@ export default function BookingPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="font-semibold text-cathedral-ivory">Email Address *</label>
+                  <label className="font-semibold text-cathedral-ivory">Email Address</label>
                   <input
                     type="email"
-                    required
                     placeholder="adebayo@example.com"
                     value={customerInfo.email}
                     onChange={(e) => setCustomerInfo({ ...customerInfo, email: e.target.value })}
@@ -521,10 +421,9 @@ export default function BookingPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="font-semibold text-cathedral-ivory">Phone / WhatsApp Line *</label>
+                  <label className="font-semibold text-cathedral-ivory">Phone / WhatsApp Line</label>
                   <input
                     type="tel"
-                    required
                     placeholder="08031234567"
                     value={customerInfo.phone}
                     onChange={(e) => setCustomerInfo({ ...customerInfo, phone: e.target.value })}
@@ -533,10 +432,9 @@ export default function BookingPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="font-semibold text-cathedral-ivory">Requested Event Date *</label>
+                  <label className="font-semibold text-cathedral-ivory">Requested Event Date</label>
                   <input
                     type="date"
-                    required
                     value={customerInfo.eventDate}
                     onChange={(e) => setCustomerInfo({ ...customerInfo, eventDate: e.target.value })}
                     className="w-full px-4 py-3 rounded-xl bg-cathedral-elevated border border-cathedral-border text-gold-300 font-mono focus:border-gold-400 focus:outline-none"
@@ -555,24 +453,40 @@ export default function BookingPage() {
                 />
               </div>
 
-              <div className="p-4 rounded-xl bg-gold-400/10 border border-gold-400/30 text-xs text-cathedral-muted space-y-2">
-                <div className="font-bold text-gold-300 flex items-center gap-1.5">
-                  <Lock className="w-4 h-4 text-gold-400" />
-                  Secure Paystack Payment Guarantee
-                </div>
-                <p>
-                  You are locking in your requested date with a mandatory 50% deposit via Paystack (Debit Cards, Bank Transfer, USSD). Remaining balance is payable 14 days prior to event.
-                </p>
+              {/* ── WhatsApp Booking CTA ── */}
+              <div className="space-y-3">
+                <a
+                  id="whatsapp-book-now"
+                  href={whatsAppHref}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-full py-4 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm uppercase tracking-widest transition-all shadow-lg flex items-center justify-center gap-3 group"
+                >
+                  <MessageCircle className="w-5 h-5" />
+                  Book Now via WhatsApp Concierge
+                  <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                </a>
+
+                <a
+                  href="tel:08174303757"
+                  className="w-full py-3.5 rounded-full bg-cathedral-elevated border border-gold-500/30 text-gold-300 font-bold text-xs uppercase tracking-widest hover:bg-gold-500/10 transition-all flex items-center justify-center gap-2"
+                >
+                  <Phone className="w-4 h-4 text-gold-400" />
+                  Or Call Us Directly: 08174303757
+                </a>
               </div>
 
-              <button
-                type="submit"
-                disabled={submitting}
-                className="w-full py-4 rounded-full bg-gold-gradient text-cathedral-bg font-bold text-sm uppercase tracking-widest hover:brightness-110 transition-all shadow-gold-glow flex items-center justify-center gap-2"
-              >
-                {submitting ? 'Initializing Paystack Gateway...' : `Proceed to Pay 50% Deposit (${formatCurrency(calculation?.depositAmount)})`}
-              </button>
-            </form>
+              {/* Booking policy reminder */}
+              <div className="p-4 rounded-xl bg-gold-400/10 border border-gold-400/30 text-xs text-cathedral-muted space-y-1">
+                <div className="font-bold text-gold-300 flex items-center gap-1.5">
+                  <Lock className="w-4 h-4 text-gold-400" />
+                  50% Deposit Date-Lock Policy
+                </div>
+                <p>
+                  Your date is officially reserved upon receipt of a 50% deposit. Our concierge will send you payment account details immediately via WhatsApp. Remaining balance is due 14 days before your event.
+                </p>
+              </div>
+            </div>
           )}
 
           {/* PREV / NEXT BUTTONS */}
