@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 
-// Programmatically import all facility images using Vite's glob
-const imageModules = import.meta.glob('../assets/facilities/facility-*.jpg', { eager: true });
+// Programmatically import all facility images using Vite's glob (now .webp)
+const imageModules = import.meta.glob('../assets/facilities/facility-*.webp', { eager: true });
 
 // Sort images by number (facility-1, facility-2, … facility-21)
 const facilityImages = Object.entries(imageModules)
@@ -31,30 +31,13 @@ export default function FacilitiesCarousel({
 }) {
   const totalSlides = showVideo ? facilityImages.length + 1 : facilityImages.length;
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
   const timerRef = useRef(null);
   const touchStartRef = useRef(0);
   const touchEndRef = useRef(0);
 
-  // Track visited slides to only render media when needed, optimizing memory
-  const [visited, setVisited] = useState(() => new Set([0, 1, totalSlides - 1]));
-
-  useEffect(() => {
-    setVisited(prev => {
-      const next = new Set(prev);
-      next.add(currentIndex);
-      next.add((currentIndex + 1) % totalSlides);
-      next.add((currentIndex - 1 + totalSlides) % totalSlides);
-      return next;
-    });
-  }, [currentIndex, totalSlides]);
-
   const goToSlide = useCallback((index) => {
-    if (isTransitioning) return;
-    setIsTransitioning(true);
     setCurrentIndex(index);
-    setTimeout(() => setIsTransitioning(false), 500);
-  }, [isTransitioning]);
+  }, []);
 
   const goNext = useCallback(() => {
     goToSlide((currentIndex + 1) % totalSlides);
@@ -98,46 +81,40 @@ export default function FacilitiesCarousel({
     slides.push({ type: 'image', ...img });
   });
 
+  const activeSlide = slides[currentIndex];
+
   return (
     <div
-      className={`relative overflow-hidden rounded-xl ${height} ${className}`}
+      className={`relative overflow-hidden rounded-xl bg-cathedral-bg ${height} ${className}`}
       onMouseEnter={pauseAuto}
       onMouseLeave={resumeAuto}
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
     >
-      {/* Slides */}
-      <div
-        className="flex h-full transition-transform duration-500 ease-in-out"
-        style={{ transform: `translateX(-${currentIndex * 100}%)` }}
-      >
-        {slides.map((slide, i) => (
-          <div key={i} className="w-full h-full flex-shrink-0 relative bg-cathedral-bg/50 flex items-center justify-center">
-            {/* Background Spinner */}
-            <Loader2 className="absolute w-8 h-8 text-gold-500/50 animate-spin z-0" />
-            
-            {visited.has(i) && (
-              slide.type === 'video' ? (
-                <video
-                  src={slide.src}
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="w-full h-full object-cover relative z-10"
-                />
-              ) : (
-                <img
-                  src={slide.src}
-                  alt={slide.alt}
-                  loading={i === 0 ? 'eager' : 'lazy'}
-                  className="w-full h-full object-cover relative z-10"
-                />
-              )
-            )}
-          </div>
-        ))}
+      {/* Active Slide Node (Single Node Rendering) */}
+      <div className="w-full h-full relative flex items-center justify-center">
+        {/* Background Spinner */}
+        <Loader2 className="absolute w-8 h-8 text-gold-500/50 animate-spin z-0" />
+        
+        {activeSlide?.type === 'video' ? (
+          <video
+            key={currentIndex}
+            src={activeSlide.src}
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover relative z-10 animate-fade-in"
+          />
+        ) : (
+          <img
+            key={currentIndex}
+            src={activeSlide?.src}
+            alt={activeSlide?.alt}
+            className="w-full h-full object-cover relative z-10 animate-fade-in"
+          />
+        )}
       </div>
 
       {/* Dark overlay for hero usage */}
@@ -170,7 +147,7 @@ export default function FacilitiesCarousel({
 
       {/* Dot Indicators */}
       {showDots && (
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5">
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center justify-center flex-wrap gap-1.5 w-[90%] mx-auto">
           {slides.map((_, i) => (
             <button
               key={i}
@@ -187,7 +164,7 @@ export default function FacilitiesCarousel({
       )}
 
       {/* Slide Counter Badge */}
-      <div className="absolute top-4 right-4 z-20 bg-cathedral-bg/70 backdrop-blur-md border border-gold-500/30 rounded-full px-3 py-1 text-[10px] font-mono text-gold-300 tracking-wider">
+      <div className="absolute top-4 right-4 z-20 bg-cathedral-bg/70 backdrop-blur-md border border-gold-500/30 rounded-full px-3 py-1 text-[10px] font-mono text-gold-300 tracking-wider shadow-md">
         {currentIndex + 1} / {totalSlides}
       </div>
     </div>

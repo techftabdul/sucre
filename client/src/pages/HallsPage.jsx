@@ -5,7 +5,7 @@ import FacilitiesCarousel from '../components/FacilitiesCarousel';
 import { Crown, Users, CheckCircle2, ChevronRight, Sparkles, Building2, Tag, Flame, Calendar, Shield } from 'lucide-react';
 
 // Import all facility images for the masonry grid
-const imageModules = import.meta.glob('../assets/facilities/facility-*.jpg', { eager: true });
+const imageModules = import.meta.glob('../assets/facilities/facility-*.webp', { eager: true });
 const facilityImages = Object.entries(imageModules)
   .sort(([a], [b]) => {
     const numA = parseInt(a.match(/facility-(\d+)/)?.[1] || '0');
