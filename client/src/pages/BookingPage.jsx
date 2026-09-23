@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useBooking } from '../context/BookingContext';
 import { 
   Check, ChevronRight, ChevronLeft, Crown, 
-  Sparkles, Lock, MessageCircle, Wrench, Phone, ArrowUpRight
+  Sparkles, Lock, MessageCircle, Wrench, Phone, ArrowUpRight, Flame, Tag, Shield
 } from 'lucide-react';
 
 export default function BookingPage() {
@@ -11,15 +11,18 @@ export default function BookingPage() {
     nextStep,
     prevStep,
     goToStep,
-    halls,
+    flagshipHall,
+    HALL_STANDARD_PRICE,
+    HALL_PROMO_PRICE,
+    activeHallPrice,
+    usePromoPrice,
+    setUsePromoPrice,
     packages,
     addons,
     selectedEventType,
     setSelectedEventType,
     guestCount,
     setGuestCount,
-    selectedHall,
-    setSelectedHall,
     selectedPackage,
     setSelectedPackage,
     selectedAddonIds,
@@ -32,6 +35,7 @@ export default function BookingPage() {
 
   // Build a pre-filled WhatsApp message from the current booking selections
   const buildWhatsAppMessage = () => {
+    const pricingLabel = usePromoPrice ? 'Promo' : 'Standard';
     const lines = [
       '🏛️ *SUCRE Events Centre — Manual Booking Request*',
       '',
@@ -41,10 +45,10 @@ export default function BookingPage() {
       `📅 *Event Date:* ${customerInfo.eventDate || '(not provided)'}`,
       `🎉 *Event Type:* ${selectedEventType}`,
       `👥 *Guests:* ${guestCount}`,
-      `🏟️ *Hall:* ${selectedHall?.name || ''}  (Grade ${selectedHall?.grade || ''})`,
+      `🏟️ *Venue:* ${flagshipHall.name} (${pricingLabel} Price: ${formatCurrency(activeHallPrice)})`,
       `✨ *Package:* ${selectedPackage?.name || ''} (${selectedPackage?.tier || ''} Tier)`,
-      `💰 *Estimated Total:* ${formatCurrency(calculation?.subtotal || (selectedHall?.basePrice || 0) + (selectedPackage?.price || 0))}`,
-      `🔒 *50% Deposit:* ${formatCurrency(calculation?.depositAmount || Math.ceil(((selectedHall?.basePrice || 0) + (selectedPackage?.price || 0)) / 2))}`,
+      `💰 *Estimated Total:* ${formatCurrency(calculation?.totalAmount || 0)}`,
+      `🔒 *Required 50% Deposit:* ${formatCurrency(calculation?.depositAmount || 0)}`,
       '',
       customerInfo.notes ? `📝 *Notes:* ${customerInfo.notes}` : '',
       '',
@@ -62,10 +66,6 @@ export default function BookingPage() {
     { name: 'Concert, Show & Live Broadcast', icon: '🎵', description: 'Stage productions & entertainment shows' },
     { name: 'Exhibition & Trade Expo', icon: '🎨', description: 'Spacious floor layouts & product launches' },
   ];
-
-
-
-
 
   return (
     <div className="min-h-screen bg-cathedral-bg text-cathedral-ivory py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-12">
@@ -87,7 +87,7 @@ export default function BookingPage() {
         <div className="flex sm:hidden items-center justify-between bg-cathedral-card p-3 rounded-2xl border border-gold-500/30 text-xs">
           <span className="font-semibold text-cathedral-ivory">
             Step {currentStep} of 5: <span className="text-gold-300 font-bold">
-              {['Event Type', 'Guests', 'Hall & Tier', 'Add-ons', 'Checkout'][currentStep - 1]}
+              {['Event Type', 'Guests', 'Venue & Tier', 'Add-ons', 'Checkout'][currentStep - 1]}
             </span>
           </span>
           <span className="text-[10px] font-mono text-gold-400 font-bold bg-gold-400/10 px-2 py-0.5 rounded-full border border-gold-400/30">
@@ -101,7 +101,7 @@ export default function BookingPage() {
           {[
             { step: 1, label: 'Event Type' },
             { step: 2, label: 'Guests' },
-            { step: 3, label: 'Hall & Tier' },
+            { step: 3, label: 'Venue & Tier' },
             { step: 4, label: 'Add-ons' },
             { step: 5, label: 'Checkout' },
           ].map((s) => {
@@ -187,7 +187,7 @@ export default function BookingPage() {
                   Step 2: How many guests are expected?
                 </h2>
                 <p className="text-xs text-cathedral-muted mt-1">
-                  Adjust the slider or pick a range to filter appropriate hall capacities.
+                  Adjust the slider or pick a range to estimate your event scale.
                 </p>
               </div>
 
@@ -232,47 +232,77 @@ export default function BookingPage() {
             </div>
           )}
 
-          {/* STEP 3: HALL & PACKAGE SELECTION */}
+          {/* STEP 3: VENUE PRICING & PACKAGE SELECTION */}
           {currentStep === 3 && (
             <div className="space-y-8">
               <div>
                 <h2 className="text-2xl font-serif font-bold text-cathedral-ivory">
-                  Step 3: Select Hall Grade & Experience Tier
+                  Step 3: Select Venue Pricing & Experience Tier
                 </h2>
                 <p className="text-xs text-cathedral-muted mt-1">
-                  Pick your preferred hall grade and luxury production package.
+                  Choose your pricing option and luxury production package.
                 </p>
               </div>
 
-              {/* Hall Selector */}
-              <div className="space-y-3">
+              {/* Single Hall — Pricing Toggle */}
+              <div className="space-y-4">
                 <label className="text-xs font-bold uppercase tracking-widest text-gold-400 block">
-                  Select Venue Hall Grade:
+                  Venue: {flagshipHall.name}
                 </label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {halls.map((h) => {
-                    const isSelected = selectedHall?.id === h.id;
-                    return (
-                      <div
-                        key={h.id}
-                        onClick={() => setSelectedHall(h)}
-                        className={`p-4 rounded-xl border cursor-pointer transition-all flex items-center justify-between ${
-                          isSelected
-                            ? 'border-gold-400 bg-gold-400/10'
-                            : 'border-cathedral-border bg-cathedral-elevated hover:border-gold-500/30'
-                        }`}
-                      >
-                        <div>
-                          <div className="text-xs uppercase font-bold text-gold-400">Grade {h.grade}</div>
-                          <div className="font-serif font-bold text-sm text-cathedral-ivory">{h.name}</div>
-                          <div className="text-[10px] text-cathedral-muted">{h.capacityMin}-{h.capacityMax} Guests</div>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-xs font-serif font-bold text-gold-gradient">{formatCurrency(h.basePrice)}</div>
-                        </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Promo Price Option */}
+                  <div
+                    onClick={() => setUsePromoPrice(true)}
+                    className={`p-5 rounded-2xl border cursor-pointer transition-all relative overflow-hidden ${
+                      usePromoPrice
+                        ? 'border-gold-400 bg-gold-500/10 shadow-gold-glow'
+                        : 'border-cathedral-border bg-cathedral-elevated hover:border-gold-500/30'
+                    }`}
+                  >
+                    {/* Promo ribbon */}
+                    <div className="absolute top-0 right-0 bg-red-500 text-white text-[9px] uppercase font-bold tracking-wider px-3 py-1 rounded-bl-xl">
+                      <Flame className="w-3 h-3 inline mr-1" />
+                      Save {formatCurrency(HALL_STANDARD_PRICE - HALL_PROMO_PRICE)}
+                    </div>
+
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                        usePromoPrice ? 'border-gold-400 bg-gold-400' : 'border-cathedral-border'
+                      }`}>
+                        {usePromoPrice && <Check className="w-3 h-3 text-cathedral-bg stroke-[3]" />}
                       </div>
-                    );
-                  })}
+                      <div className="text-xs uppercase font-bold tracking-widest text-red-400 flex items-center gap-1">
+                        <Tag className="w-3.5 h-3.5" />
+                        October Promo Price
+                      </div>
+                    </div>
+                    <div className="text-2xl font-serif font-bold text-gold-gradient">{formatCurrency(HALL_PROMO_PRICE)}</div>
+                    <div className="text-[10px] text-cathedral-muted mt-1">Limited time — Ending October!</div>
+                  </div>
+
+                  {/* Standard Price Option */}
+                  <div
+                    onClick={() => setUsePromoPrice(false)}
+                    className={`p-5 rounded-2xl border cursor-pointer transition-all ${
+                      !usePromoPrice
+                        ? 'border-gold-400 bg-gold-500/10 shadow-gold-glow'
+                        : 'border-cathedral-border bg-cathedral-elevated hover:border-gold-500/30'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                        !usePromoPrice ? 'border-gold-400 bg-gold-400' : 'border-cathedral-border'
+                      }`}>
+                        {!usePromoPrice && <Check className="w-3 h-3 text-cathedral-bg stroke-[3]" />}
+                      </div>
+                      <div className="text-xs uppercase font-bold tracking-widest text-cathedral-muted">
+                        Standard Price
+                      </div>
+                    </div>
+                    <div className="text-2xl font-serif font-bold text-gold-gradient">{formatCurrency(HALL_STANDARD_PRICE)}</div>
+                    <div className="text-[10px] text-cathedral-muted mt-1">Full-rate venue rental</div>
+                  </div>
                 </div>
               </div>
 
@@ -396,6 +426,28 @@ export default function BookingPage() {
                 </div>
               </div>
 
+              {/* ── Prominent Deposit Callout ── */}
+              <div className="p-6 rounded-2xl bg-gradient-to-r from-gold-900/30 to-cathedral-elevated border-2 border-gold-400/50 animate-deposit-pulse space-y-3">
+                <div className="flex items-center gap-2 text-gold-400">
+                  <Shield className="w-5 h-5" />
+                  <span className="text-sm font-bold uppercase tracking-wider">Booking Payment Summary</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+                  <div>
+                    <div className="text-[10px] uppercase tracking-widest text-cathedral-muted font-semibold">Total Estimation</div>
+                    <div className="text-xl font-serif font-bold text-cathedral-ivory mt-1">{formatCurrency(calculation?.totalAmount)}</div>
+                  </div>
+                  <div className="bg-gold-400/10 rounded-xl p-3 border border-gold-400/30">
+                    <div className="text-[10px] uppercase tracking-widest text-gold-400 font-bold">Required Deposit (50%)</div>
+                    <div className="text-2xl font-serif font-bold text-gold-400 mt-1">{formatCurrency(calculation?.depositAmount)}</div>
+                  </div>
+                  <div>
+                    <div className="text-[10px] uppercase tracking-widest text-cathedral-muted font-semibold">Balance Due (14 Days Prior)</div>
+                    <div className="text-xl font-serif font-bold text-cathedral-ivory mt-1">{formatCurrency(calculation?.balanceAmount)}</div>
+                  </div>
+                </div>
+              </div>
+
               {/* ── Customer Detail Form ── */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                 <div className="space-y-1.5">
@@ -504,7 +556,7 @@ export default function BookingPage() {
                 onClick={nextStep}
                 className="px-8 py-3 rounded-full bg-gold-gradient text-cathedral-bg font-bold text-xs uppercase tracking-widest hover:brightness-110 transition-all flex items-center gap-1 shadow-md"
               >
-                Continue <ChevronRight className="w-4 h-4" />
+              Continue <ChevronRight className="w-4 h-4" />
               </button>
             )}
           </div>
@@ -533,8 +585,22 @@ export default function BookingPage() {
             </div>
 
             <div className="flex justify-between">
-              <span className="text-cathedral-muted">Selected Hall:</span>
-              <span className="font-semibold text-cathedral-ivory">{selectedHall?.name || 'Grade 5'}</span>
+              <span className="text-cathedral-muted">Venue:</span>
+              <span className="font-semibold text-cathedral-ivory">{flagshipHall.name}</span>
+            </div>
+
+            <div className="flex justify-between items-center">
+              <span className="text-cathedral-muted">Pricing:</span>
+              <span className="font-semibold">
+                {usePromoPrice ? (
+                  <span className="inline-flex items-center gap-1.5 text-red-400">
+                    <Flame className="w-3 h-3" />
+                    October Promo
+                  </span>
+                ) : (
+                  <span className="text-cathedral-ivory">Standard</span>
+                )}
+              </span>
             </div>
 
             <div className="flex justify-between">
@@ -551,7 +617,7 @@ export default function BookingPage() {
           {/* Pricing Breakdown */}
           <div className="bg-cathedral-bg/80 border border-cathedral-border rounded-2xl p-4 space-y-2 text-xs">
             <div className="flex justify-between text-cathedral-muted">
-              <span>Hall Base Rental:</span>
+              <span>Venue Rental{usePromoPrice ? ' (Promo)' : ''}:</span>
               <span>{formatCurrency(calculation?.hall?.cost)}</span>
             </div>
             <div className="flex justify-between text-cathedral-muted">
@@ -569,17 +635,30 @@ export default function BookingPage() {
             </div>
           </div>
 
-          {/* 50% Deposit Calculation Box */}
-          <div className="bg-gradient-to-r from-gold-900/20 to-cathedral-elevated border border-gold-400/40 rounded-2xl p-4 space-y-2 text-xs">
+          {/* 50% Deposit Calculation Box — PROMINENT */}
+          <div className="bg-gradient-to-r from-gold-900/20 to-cathedral-elevated border-2 border-gold-400/40 rounded-2xl p-5 space-y-3 animate-deposit-pulse">
             <div className="flex justify-between items-center">
-              <span className="font-bold text-gold-300 uppercase tracking-wider text-[11px]">Required 50% Deposit:</span>
-              <span className="font-serif font-bold text-lg text-gold-400">{formatCurrency(calculation?.depositAmount)}</span>
+              <span className="font-bold text-gold-300 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                <Shield className="w-4 h-4 text-gold-400" />
+                Required Deposit (50%):
+              </span>
+              <span className="font-serif font-bold text-xl text-gold-400">{formatCurrency(calculation?.depositAmount)}</span>
             </div>
             <div className="flex justify-between text-[11px] text-cathedral-muted">
               <span>Remaining Balance (Due 14 days prior):</span>
               <span>{formatCurrency(calculation?.balanceAmount)}</span>
             </div>
           </div>
+
+          {/* Promo badge in sidebar */}
+          {usePromoPrice && (
+            <div className="bg-red-900/20 border border-red-500/30 rounded-xl p-3 text-center animate-promo-pulse">
+              <div className="text-[10px] uppercase tracking-widest text-red-400 font-bold flex items-center justify-center gap-1">
+                <Flame className="w-3 h-3" />
+                Promo Active — Save {formatCurrency(HALL_STANDARD_PRICE - HALL_PROMO_PRICE)}
+              </div>
+            </div>
+          )}
         </div>
 
       </div>

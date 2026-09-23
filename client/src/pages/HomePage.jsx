@@ -1,32 +1,37 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useBooking } from '../context/BookingContext';
-import { Calendar, Crown, ShieldCheck, Sparkles, Star, Users, CheckCircle2, ChevronRight, Phone, MessageCircle, Award, Zap, MapPin } from 'lucide-react';
+import FacilitiesCarousel from '../components/FacilitiesCarousel';
+import { Calendar, Crown, ShieldCheck, Sparkles, Star, Users, CheckCircle2, ChevronRight, Phone, MessageCircle, Award, Zap, MapPin, Tag, Flame } from 'lucide-react';
+import facilityVideo from '../assets/facilities/facility-video.mp4';
 
 export default function HomePage() {
-  const { halls, packages, formatCurrency } = useBooking();
+  const { packages, formatCurrency, HALL_STANDARD_PRICE, HALL_PROMO_PRICE, flagshipHall } = useBooking();
 
   return (
     <div className="min-h-screen bg-cathedral-bg text-cathedral-ivory space-y-24 pb-20">
       
-      {/* HERO SECTION */}
+      {/* HERO SECTION — Carousel Background */}
       <section className="relative min-h-[90vh] flex items-center justify-center pt-12 pb-24 overflow-hidden">
-        {/* Background Image Overlay with Dark Glass Gradient */}
+        {/* Video Background */}
         <div className="absolute inset-0 z-0">
-          <img 
-            src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=2000&q=80" 
-            alt="SUCRE Events Centre Cathedral Hall" 
-            className="w-full h-full object-cover object-center filter brightness-[0.35] scale-105 transition-transform duration-10000 ease-out"
+          <video
+            src={facilityVideo}
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover brightness-[0.35]"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-cathedral-bg via-cathedral-bg/70 to-transparent" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gold-500/10 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-cathedral-bg via-cathedral-bg/70 to-transparent z-[2]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gold-500/10 via-transparent to-transparent z-[2]" />
         </div>
 
         <div className="relative z-10 max-w-5xl mx-auto px-4 text-center space-y-8">
           {/* Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gold-400/10 border border-gold-400/30 text-gold-300 text-xs uppercase tracking-[0.25em] font-semibold backdrop-blur-md">
             <Crown className="w-4 h-4 text-gold-400" />
-            Ibadan’s Crown Jewel Event Venue
+            Ibadan's Crown Jewel Event Venue
           </div>
 
           {/* Heading */}
@@ -42,14 +47,31 @@ export default function HomePage() {
             </p>
           </div>
 
+          {/* PROMO BANNER — Hero Level */}
+          <div className="inline-block animate-promo-glow">
+            <div className="bg-gradient-to-r from-red-900/40 via-red-800/50 to-red-900/40 border-2 border-red-500/60 rounded-2xl px-6 py-4 backdrop-blur-md relative overflow-hidden">
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-red-400 to-transparent" />
+              <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-6">
+                <div className="flex items-center gap-2">
+                  <Flame className="w-5 h-5 text-red-400 animate-pulse" />
+                  <span className="text-red-300 font-bold text-xs uppercase tracking-widest">October Special</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-cathedral-muted line-through text-sm font-mono">{formatCurrency(HALL_STANDARD_PRICE)}</span>
+                  <span className="text-2xl sm:text-3xl font-serif font-bold animate-gold-shimmer">{formatCurrency(HALL_PROMO_PRICE)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* CTAs */}
-          <div className="pt-6 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               to="/book"
               className="w-full sm:w-auto px-8 py-4 rounded-full bg-gold-gradient text-cathedral-bg font-bold text-sm uppercase tracking-widest hover:brightness-110 transition-all duration-300 shadow-gold-glow flex items-center justify-center gap-2 group"
             >
               <Calendar className="w-5 h-5" />
-              Reserve Your Date Now
+              Reserve at Promo Price
               <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
 
@@ -57,7 +79,7 @@ export default function HomePage() {
               to="/halls"
               className="w-full sm:w-auto px-8 py-4 rounded-full bg-cathedral-card/80 border border-gold-500/40 text-gold-300 font-semibold text-sm uppercase tracking-widest hover:bg-gold-500/10 hover:border-gold-400 transition-all duration-300 backdrop-blur-md flex items-center justify-center gap-2"
             >
-              Explore 5 Hall Grades
+              Explore Our Venue
             </Link>
           </div>
 
@@ -68,8 +90,8 @@ export default function HomePage() {
               <div className="text-xs text-cathedral-muted uppercase tracking-wider mt-1">Max Guest Capacity</div>
             </div>
             <div className="bg-cathedral-card/40 p-4 rounded-2xl border border-white/5 backdrop-blur-sm">
-              <div className="text-2xl font-serif font-bold text-gold-gradient">5 Grades</div>
-              <div className="text-xs text-cathedral-muted uppercase tracking-wider mt-1">Intimate to Master</div>
+              <div className="text-2xl font-serif font-bold text-gold-gradient">Premium</div>
+              <div className="text-xs text-cathedral-muted uppercase tracking-wider mt-1">Facility Views</div>
             </div>
             <div className="bg-cathedral-card/40 p-4 rounded-2xl border border-white/5 backdrop-blur-sm">
               <div className="text-2xl font-serif font-bold text-gold-gradient">100%</div>
@@ -125,88 +147,115 @@ export default function HomePage() {
             </div>
           </div>
 
+          {/* Facility Video Embed */}
           <div className="relative">
             <div className="relative rounded-3xl overflow-hidden border border-gold-500/30 shadow-cathedral-card group">
-              <img 
-                src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=1200&q=80" 
-                alt="Cathedral Grand Hall Interior" 
-                className="w-full h-[480px] object-cover group-hover:scale-105 transition-transform duration-700"
+              <FacilitiesCarousel
+                showVideo={false}
+                autoPlay={true}
+                interval={6000}
+                height="h-[480px]"
+                showDots={true}
+                showArrows={true}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-cathedral-bg via-transparent to-transparent" />
-              <div className="absolute bottom-6 left-6 right-6 bg-glass p-6 rounded-2xl border border-gold-500/20 backdrop-blur-md">
-                <div className="text-xs uppercase tracking-widest text-gold-400 font-bold mb-1">Featured Venue</div>
-                <div className="text-lg font-serif font-bold text-cathedral-ivory">Grade 5: The Cathedral Master Grandeur</div>
-                <div className="text-xs text-cathedral-muted mt-1">Capacity: 900 - 1,500+ Guests • Base: ₦2,600,000</div>
+              <div className="absolute bottom-6 left-6 right-6 bg-glass p-6 rounded-2xl border border-gold-500/20 backdrop-blur-md z-30 pointer-events-none">
+                <div className="text-xs uppercase tracking-widest text-gold-400 font-bold mb-1">Flagship Venue</div>
+                <div className="text-lg font-serif font-bold text-cathedral-ivory">{flagshipHall.name}</div>
+                <div className="text-xs text-cathedral-muted mt-1">Capacity: {flagshipHall.capacityMin} - {flagshipHall.capacityMax}+ Guests</div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* HALL GRADES PREVIEW */}
+      {/* SINGLE HALL SHOWCASE + PROMO PRICING */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         <div className="text-center space-y-3">
-          <div className="text-xs uppercase tracking-[0.3em] font-bold text-gold-400">Tailored Capacity Options</div>
-          <h2 className="text-3xl md:text-5xl font-serif font-bold text-cathedral-ivory">Explore Our 5 Hall Grades</h2>
+          <div className="text-xs uppercase tracking-[0.3em] font-bold text-gold-400">Our Flagship Venue</div>
+          <h2 className="text-3xl md:text-5xl font-serif font-bold text-cathedral-ivory">{flagshipHall.name}</h2>
           <p className="max-w-xl mx-auto text-xs md:text-sm text-cathedral-muted">
-            From intimate VIP sanctuary dinners to mega 1,500-guest royal banquets, choose the perfect scale for your event.
+            {flagshipHall.subtitle}
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {halls.slice(0, 3).map((hall) => (
-            <div key={hall.id} className="bg-cathedral-card rounded-2xl overflow-hidden border border-cathedral-border/80 hover:border-gold-500/50 transition-all duration-300 flex flex-col group">
-              <div className="relative h-56 overflow-hidden">
-                <img 
-                  src={hall.image} 
-                  alt={hall.name} 
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute top-3 left-3 bg-gold-400 text-cathedral-bg text-[10px] uppercase font-bold tracking-widest px-3 py-1 rounded-full shadow-md">
-                  Grade {hall.grade}
+        {/* Promo Pricing Card */}
+        <div className="max-w-3xl mx-auto">
+          <div className="bg-cathedral-card rounded-3xl border-2 border-gold-400/50 overflow-hidden shadow-gold-glow relative">
+            {/* Promo Ribbon */}
+            <div className="bg-gradient-to-r from-red-600 via-red-500 to-orange-500 py-3 px-6 flex items-center justify-center gap-3 animate-promo-pulse">
+              <Tag className="w-5 h-5 text-white" />
+              <span className="text-white font-bold text-sm md:text-base uppercase tracking-wider">
+                Special Offer: {formatCurrency(HALL_PROMO_PRICE)} — Ending in October!
+              </span>
+              <Flame className="w-5 h-5 text-yellow-300 animate-pulse" />
+            </div>
+
+            <div className="p-8 md:p-10 space-y-8">
+              {/* Price Display */}
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+                <div className="text-center sm:text-left space-y-2">
+                  <div className="text-xs uppercase tracking-widest text-cathedral-muted font-semibold">Standard Venue Rental</div>
+                  <div className="text-2xl text-cathedral-muted font-serif line-through">{formatCurrency(HALL_STANDARD_PRICE)}</div>
                 </div>
-                <div className="absolute bottom-3 right-3 bg-cathedral-bg/90 text-gold-300 text-xs font-mono px-3 py-1 rounded-full backdrop-blur-sm border border-gold-500/30">
-                  {hall.capacityMin} - {hall.capacityMax} Guests
+                <div className="text-center sm:text-right space-y-2">
+                  <div className="text-xs uppercase tracking-widest text-red-400 font-bold flex items-center justify-center sm:justify-end gap-1.5">
+                    <Flame className="w-3.5 h-3.5" />
+                    October Promotional Price
+                  </div>
+                  <div className="text-4xl md:text-5xl font-serif font-bold animate-gold-shimmer">{formatCurrency(HALL_PROMO_PRICE)}</div>
+                  <div className="text-xs text-gold-300 font-mono">Save {formatCurrency(HALL_STANDARD_PRICE - HALL_PROMO_PRICE)}</div>
                 </div>
               </div>
-              
-              <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
-                <div>
-                  <h3 className="font-serif text-xl font-bold text-cathedral-ivory group-hover:text-gold-300 transition-colors">
-                    {hall.name}
-                  </h3>
-                  <p className="text-xs text-cathedral-muted mt-1 line-clamp-2">
-                    {hall.subtitle}
-                  </p>
-                </div>
 
-                <div className="pt-4 border-t border-cathedral-border flex items-center justify-between">
-                  <div>
-                    <div className="text-[10px] uppercase tracking-wider text-cathedral-muted">Starting Base Price</div>
-                    <div className="text-lg font-serif font-bold text-gold-gradient">
-                      {formatCurrency(hall.basePrice)}
-                    </div>
+              {/* Feature Checklist */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-6 border-t border-cathedral-border">
+                {flagshipHall.features.map((feat, idx) => (
+                  <div key={idx} className="flex items-center gap-2.5 text-xs text-cathedral-muted">
+                    <CheckCircle2 className="w-4 h-4 text-gold-400 shrink-0" />
+                    <span>{feat}</span>
                   </div>
-                  <Link 
-                    to="/halls" 
-                    className="p-2.5 rounded-full bg-gold-500/10 text-gold-400 hover:bg-gold-400 hover:text-cathedral-bg transition-colors"
-                  >
-                    <ChevronRight className="w-5 h-5" />
-                  </Link>
+                ))}
+              </div>
+
+              {/* Deposit Info */}
+              <div className="bg-gradient-to-r from-gold-900/20 to-cathedral-elevated border border-gold-400/40 rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="text-center sm:text-left">
+                  <div className="text-xs uppercase tracking-widest text-gold-400 font-bold">50% Deposit to Lock Your Date</div>
+                  <div className="text-2xl font-serif font-bold text-gold-400 mt-1">{formatCurrency(HALL_PROMO_PRICE * 0.5)}</div>
                 </div>
+                <Link
+                  to="/book"
+                  className="px-8 py-4 rounded-full bg-gold-gradient text-cathedral-bg font-bold text-sm uppercase tracking-widest hover:brightness-110 transition-all shadow-gold-glow flex items-center gap-2 group"
+                >
+                  <Calendar className="w-5 h-5" />
+                  Book Now
+                  <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </Link>
               </div>
             </div>
-          ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FACILITIES SHOWCASE — Full Gallery */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+        <div className="text-center space-y-3">
+          <div className="text-xs uppercase tracking-[0.3em] font-bold text-gold-400">Virtual Tour</div>
+          <h2 className="text-3xl md:text-5xl font-serif font-bold text-cathedral-ivory">Our Stunning Facilities</h2>
+          <p className="max-w-xl mx-auto text-xs md:text-sm text-cathedral-muted">
+            Take a visual tour through The Cathedral — from grand ballroom arches to VIP suites and outdoor parking pavilions.
+          </p>
         </div>
 
-        <div className="text-center pt-4">
-          <Link
-            to="/halls"
-            className="inline-flex items-center gap-2 px-8 py-3 rounded-full bg-cathedral-card border border-gold-500/40 text-gold-300 font-semibold text-xs uppercase tracking-widest hover:border-gold-400 transition-colors"
-          >
-            View Full 5-Grade Matrix & Specifications <ChevronRight className="w-4 h-4" />
-          </Link>
-        </div>
+        <FacilitiesCarousel
+          showVideo={false}
+          autoPlay={true}
+          interval={4500}
+          height="h-[300px] md:h-[500px]"
+          showDots={true}
+          showArrows={true}
+          className="shadow-lg"
+        />
       </section>
 
       {/* EXPERIENCE PACKAGES HIGHLIGHT */}
@@ -366,4 +415,3 @@ export default function HomePage() {
     </div>
   );
 }
-

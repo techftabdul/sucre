@@ -1,100 +1,35 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { calculateBooking, createBooking, initializePayment, verifyPayment } from '../services/api';
 
-// ─── Static catalog data (embedded so the site works on Netlify without a backend) ───
-const STATIC_HALLS = [
-  {
-    id: 'hall-grade-1',
-    grade: 1,
-    name: 'Intimate Sanctuary',
-    subtitle: 'Bespoke elegance for micro-weddings and private VIP dinners',
-    capacityMin: 100,
-    capacityMax: 250,
-    basePrice: 650000,
-    image: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1200&q=80',
-    description: 'An enchanting, climate-controlled space with crystal chandeliers, private foyer, and ambient mood lighting designed for executive meetings, intimate receptions, and private celebrations.',
-    features: JSON.stringify([
-      'Capacity: Up to 250 guests',
-      'Fully Air-Conditioned with 100% Power Backup',
-      'Private VIP Prep Suite',
-      'Dedicated Restrooms',
-      'Acoustic Soundproofing'
-    ])
-  },
-  {
-    id: 'hall-grade-2',
-    grade: 2,
-    name: 'Classic Pavilion',
-    subtitle: 'Chic architectural setup with adaptable lighting & modern acoustics',
-    capacityMin: 250,
-    capacityMax: 450,
-    basePrice: 950000,
-    image: 'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=1200&q=80',
-    description: 'Versatile and sophisticated hall ideal for corporate galas, mid-scale wedding receptions, and milestone birthday banquets. Equipped with expansive elevated staging.',
-    features: JSON.stringify([
-      'Capacity: Up to 450 guests',
-      'State-of-the-Art LED Stage Rigging',
-      '2 VIP Executive Changing Rooms',
-      'Dedicated Catering Serving Bay',
-      'High-Speed Guest Wi-Fi'
-    ])
-  },
-  {
-    id: 'hall-grade-3',
-    grade: 3,
-    name: 'Grand Arch Ballroom',
-    subtitle: 'Opulent hall showcasing high-vaulted ceilings & panoramic LED walls',
-    capacityMin: 450,
-    capacityMax: 700,
-    basePrice: 1400000,
-    image: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=1200&q=80',
-    description: 'Designed to impress. Features signature cathedral vault arches, massive 4K LED video screens, and a sprawling dance floor created for royal banquets and high-profile events.',
-    features: JSON.stringify([
-      'Capacity: Up to 700 guests',
-      'High-Vaulted Architectural Ceilings',
-      'Integrated 4K Ultra-HD LED Wall',
-      'Green Room & Media Control Booth',
-      'Ample Covered Parking for 300+ Vehicles'
-    ])
-  },
-  {
-    id: 'hall-grade-4',
-    grade: 4,
-    name: 'Prestige Royal Suite',
-    subtitle: 'High-capacity luxury domain for majestic galas and royal weddings',
-    capacityMin: 700,
-    capacityMax: 900,
-    basePrice: 1950000,
-    image: 'https://images.unsplash.com/photo-1527529482837-4698179dc6ce?auto=format&fit=crop&w=1200&q=80',
-    description: 'A grand architectural marvel featuring double-tier balcony seating, custom gold-leaf trimming, and comprehensive event production infrastructure.',
-    features: JSON.stringify([
-      'Capacity: Up to 900 guests',
-      'Double-Tier Mezzanine Viewing Gallery',
-      'Executive Red-Carpet Entrance Foyer',
-      'Dual Catering Preparation Wings',
-      '24/7 Armed Security Escort Patrols'
-    ])
-  },
-  {
-    id: 'hall-grade-5',
-    grade: 5,
-    name: 'The Cathedral Master Grandeur',
-    subtitle: 'The flagship crown jewel of Ibadan — Unlimited luxury & 1,500+ capacity',
-    capacityMin: 900,
-    capacityMax: 1500,
-    basePrice: 2600000,
-    image: 'https://images.unsplash.com/photo-1543968996-ee822b8176ba?auto=format&fit=crop&w=1200&q=80',
-    description: 'The ultimate pinnacle of event space in Oyo State. Combines breathtaking cathedral archways, massive dual LED walls, hydraulic stage lifts, and VIP presidential suites.',
-    features: JSON.stringify([
-      'Capacity: 900 to 1,500+ guests',
-      'Exclusive Full-Venue Access',
-      'Presidential VIP Holding Lounge',
-      'Dual 500kVA Synchronized Heavy-Duty Generators',
-      'Helipad Access & Executive Motorcade Protocol'
-    ])
-  }
-];
+// ─── Pricing Constants ────────────────────────────────────────────────────────
+const HALL_STANDARD_PRICE = 2800000;
+const HALL_PROMO_PRICE = 2200000;
 
+// ─── Single Flagship Hall ─────────────────────────────────────────────────────
+const FLAGSHIP_HALL = {
+  id: 'hall-cathedral',
+  name: 'The Cathedral',
+  subtitle: 'Ibadan\'s Crown Jewel — Luxury Event Venue for Royal Celebrations',
+  capacityMin: 100,
+  capacityMax: 1500,
+  standardPrice: HALL_STANDARD_PRICE,
+  promoPrice: HALL_PROMO_PRICE,
+  description: 'An architectural masterpiece combining breathtaking cathedral archways, massive dual LED walls, hydraulic stage lifts, VIP presidential suites, and dual synchronized generators — designed for royal wedding receptions, high-stakes corporate galas, and VIP celebrations in Ibadan, Oyo State.',
+  features: [
+    'Capacity: 100 to 1,500+ guests',
+    'Exclusive Full-Venue Access',
+    'Presidential VIP Holding Lounge',
+    'Dual 500kVA Synchronized Heavy-Duty Generators',
+    'Fully Air-Conditioned with 100% Power Backup',
+    'Integrated 4K Ultra-HD LED Wall',
+    'State-of-the-Art LED Stage Rigging',
+    'Green Room & Media Control Booth',
+    'Ample Covered Parking for 300+ Vehicles',
+    'Curated Security & Event Protocol Officers',
+  ],
+};
+
+// ─── Experience Packages ──────────────────────────────────────────────────────
 const STATIC_PACKAGES = [
   {
     id: 'pkg-classic',
@@ -146,6 +81,7 @@ const STATIC_PACKAGES = [
   }
 ];
 
+// ─── Add-ons ──────────────────────────────────────────────────────────────────
 const STATIC_ADDONS = [
   {
     id: 'addon-1',
@@ -206,16 +142,20 @@ const STATIC_ADDONS = [
 ];
 
 // ─── Local calculation (used when backend is unreachable) ─────────────────────
-function localCalculate({ hall, pkg, addonIds, guestCount }) {
+function localCalculate({ hallPrice, pkg, addonIds, guestCount }) {
   const addonItems = STATIC_ADDONS.filter(a => addonIds.includes(a.id));
   const addonsTotal = addonItems.reduce((sum, a) => {
     return sum + (a.unit === 'per guest' ? a.price * guestCount : a.price);
   }, 0);
-  const subtotal = (hall?.basePrice || 0) + (pkg?.price || 0) + addonsTotal;
+  const subtotal = (hallPrice || 0) + (pkg?.price || 0) + addonsTotal;
   const deposit = Math.ceil(subtotal * 0.5);
   const balance = subtotal - deposit;
   return {
+    hall: { cost: hallPrice || 0 },
+    package: { cost: pkg?.price || 0 },
+    addonsTotal,
     subtotal,
+    totalAmount: subtotal,
     depositAmount: deposit,
     balanceAmount: balance,
     addonsBreakdown: addonItems.map(a => ({
@@ -231,18 +171,17 @@ const BookingContext = createContext();
 export function BookingProvider({ children }) {
   const [currentStep, setCurrentStep] = useState(1);
 
-  // Catalog — start with static data immediately (no loading delay)
-  const [halls] = useState(STATIC_HALLS);
+  // Catalog — single hall, packages, addons
   const [packages] = useState(STATIC_PACKAGES);
   const [addons] = useState(STATIC_ADDONS);
   const [loadingInitial] = useState(false);
 
+  // Promo pricing toggle — defaults to promo active
+  const [usePromoPrice, setUsePromoPrice] = useState(true);
+
   // Wizard state
   const [selectedEventType, setSelectedEventType] = useState('Wedding Reception');
   const [guestCount, setGuestCount] = useState(500);
-  const [selectedHall, setSelectedHall] = useState(
-    STATIC_HALLS.find(h => h.grade === 5) || STATIC_HALLS[0]
-  );
   const [selectedPackage, setSelectedPackage] = useState(
     STATIC_PACKAGES.find(p => p.tier === 'Silver') || STATIC_PACKAGES[0]
   );
@@ -255,28 +194,31 @@ export function BookingProvider({ children }) {
     notes: '',
   });
 
+  // Active hall price derived from promo toggle
+  const activeHallPrice = usePromoPrice ? HALL_PROMO_PRICE : HALL_STANDARD_PRICE;
+
   // Calculation
   const [calculation, setCalculation] = useState(null);
   const [isCalculating, setIsCalculating] = useState(false);
 
-  // Recalculate whenever selections change — try backend, fall back to local
+  // Recalculate whenever selections change
   useEffect(() => {
     async function recalculate() {
-      if (!selectedHall || !selectedPackage) return;
+      if (!selectedPackage) return;
       setIsCalculating(true);
       try {
         const res = await calculateBooking({
-          hallId: selectedHall.id,
+          hallId: FLAGSHIP_HALL.id,
           packageId: selectedPackage.id,
           addonIds: selectedAddonIds,
           guestCount,
         });
         setCalculation(res.data.data);
       } catch {
-        // Backend not available (e.g. static hosting) — use local calculation
+        // Backend not available — use local calculation
         setCalculation(
           localCalculate({
-            hall: selectedHall,
+            hallPrice: activeHallPrice,
             pkg: selectedPackage,
             addonIds: selectedAddonIds,
             guestCount,
@@ -287,7 +229,7 @@ export function BookingProvider({ children }) {
       }
     }
     recalculate();
-  }, [selectedHall, selectedPackage, selectedAddonIds, guestCount]);
+  }, [activeHallPrice, selectedPackage, selectedAddonIds, guestCount]);
 
   const toggleAddon = (addonId) => {
     setSelectedAddonIds(prev =>
@@ -315,16 +257,22 @@ export function BookingProvider({ children }) {
       nextStep,
       prevStep,
       goToStep,
-      halls,
+      // Single hall data
+      flagshipHall: FLAGSHIP_HALL,
+      HALL_STANDARD_PRICE,
+      HALL_PROMO_PRICE,
+      activeHallPrice,
+      usePromoPrice,
+      setUsePromoPrice,
+      // Packages & addons
       packages,
       addons,
       loadingInitial,
+      // Wizard state
       selectedEventType,
       setSelectedEventType,
       guestCount,
       setGuestCount,
-      selectedHall,
-      setSelectedHall,
       selectedPackage,
       setSelectedPackage,
       selectedAddonIds,
