@@ -118,7 +118,7 @@ export default function HomePage() {
               <div className="flex items-start gap-3 bg-cathedral-card p-4 rounded-xl border border-cathedral-border">
                 <Award className="w-6 h-6 text-gold-400 shrink-0 mt-1" />
                 <div>
-                  <h4 className="font-serif text-sm font-bold text-cathedral-ivory">Curated Concierge & Security</h4>
+                  <h4 className="font-serif text-sm font-bold text-cathedral-ivory">Curated Security & Event Contact</h4>
                   <p className="text-xs text-cathedral-muted mt-0.5">Dedicated event supervisors, protocol officers, armed escorts, and valet parking.</p>
                 </div>
               </div>
@@ -326,7 +326,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* QUICK INQUIRY / CONCIERGE CALLOUT */}
+      {/* QUICK INQUIRY / CONTACT CALLOUT */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-gradient-to-r from-cathedral-card via-cathedral-elevated to-cathedral-card rounded-3xl p-8 md:p-12 border border-gold-500/30 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="space-y-3 text-center md:text-left">
@@ -338,7 +338,7 @@ export default function HomePage() {
               Need Immediate Date Reservation Assistance?
             </h3>
             <p className="text-xs md:text-sm text-cathedral-muted max-w-xl">
-              Connect directly with our Chief Event Coordinator via phone or official WhatsApp concierge line (08174303757).
+              Connect directly with our Chief Event Coordinator via phone or official WhatsApp contact line (08174303757).
             </p>
           </div>
 

@@ -6,8 +6,8 @@ import SucreLogo from '../assets/SucreLogo';
 import { Lock, Shield, AlertCircle } from 'lucide-react';
 
 export default function AdminLoginPage() {
-  const [username, setUsername] = useState('admin');
-  const [password, setPassword] = useState('admin123');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const { loginAdmin } = useAuth();
@@ -54,9 +54,10 @@ export default function AdminLoginPage() {
             <input
               type="text"
               required
+              placeholder="Enter username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl bg-cathedral-elevated border border-cathedral-border text-cathedral-ivory focus:border-gold-400 focus:outline-none"
+              className="w-full px-4 py-3 rounded-xl bg-cathedral-elevated border border-cathedral-border text-cathedral-ivory placeholder:text-cathedral-muted/50 focus:border-gold-400 focus:outline-none"
             />
           </div>
 
@@ -65,16 +66,14 @@ export default function AdminLoginPage() {
             <input
               type="password"
               required
+              placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl bg-cathedral-elevated border border-cathedral-border text-cathedral-ivory focus:border-gold-400 focus:outline-none"
+              className="w-full px-4 py-3 rounded-xl bg-cathedral-elevated border border-cathedral-border text-cathedral-ivory placeholder:text-cathedral-muted/50 focus:border-gold-400 focus:outline-none"
             />
           </div>
 
-          <div className="p-3 bg-cathedral-bg border border-cathedral-border rounded-xl text-[11px] text-cathedral-muted">
-            <span className="font-bold text-gold-300">Default Seed Credentials:</span><br />
-            Username: <code className="text-gold-400">admin</code> | Password: <code className="text-gold-400">admin123</code>
-          </div>
+
 
           <button
             type="submit"

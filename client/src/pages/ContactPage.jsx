@@ -20,7 +20,7 @@ export default function ContactPage() {
           Ibadan Location & Direct Lines
         </div>
         <h1 className="text-4xl md:text-5xl font-serif font-bold text-cathedral-ivory">
-          Connect with Our Venue Concierge
+          Connect with Our Venue Contact Team
         </h1>
         <p className="text-sm text-cathedral-muted leading-relaxed">
           Have questions about hall capacities, custom decor packages, or date availability? Reach out directly via phone, WhatsApp, or formal inquiry.
@@ -193,7 +193,7 @@ export default function ContactPage() {
                 type="submit"
                 className="w-full py-4 rounded-full bg-gold-gradient text-cathedral-bg font-bold text-xs uppercase tracking-widest hover:brightness-110 transition-all shadow-md flex items-center justify-center gap-2"
               >
-                <Send className="w-4 h-4" /> Transmit Concierge Inquiry
+                <Send className="w-4 h-4" /> Submit Contact Inquiry
               </button>
             </form>
           )}

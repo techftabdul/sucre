@@ -133,7 +133,7 @@ const STATIC_PACKAGES = [
     name: 'Gold Royal Cathedral Sovereign',
     price: 2800000,
     badge: 'All-Inclusive Royalty',
-    description: 'The ultimate royal experience. Complete full-day venue reservation, 360-degree event production, red carpet setup, photography, and VIP concierge.',
+    description: 'The ultimate royal experience. Complete full-day venue reservation, 360-degree event production, red carpet setup, photography, and VIP contact service.',
     features: JSON.stringify([
       'Exclusive 24-Hour Venue Access',
       'Custom Floral Decor & Gold Crystal Table Settings',

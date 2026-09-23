@@ -60,10 +60,10 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Column 3: Contact & Direct Concierge */}
+          {/* Column 3: Contact & Direct Contact */}
           <div>
             <h4 className="font-serif text-sm uppercase tracking-widest text-gold-gradient font-bold mb-4">
-              Official Concierge
+              Official Contact
             </h4>
             <ul className="space-y-3 text-xs text-cathedral-muted">
               <li className="flex items-start gap-2.5">

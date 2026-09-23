@@ -377,7 +377,7 @@ export default function BookingPage() {
                   Step 5: Complete Your Details & Book
                 </h2>
                 <p className="text-xs text-cathedral-muted mt-1">
-                  Fill in your details below, then send them directly to our concierge via WhatsApp to lock in your date.
+                  Fill in your details below, then send them directly to our contact team via WhatsApp to lock in your date.
                 </p>
               </div>
 
@@ -391,7 +391,7 @@ export default function BookingPage() {
                     Online Payment Gateway — Under Maintenance
                   </div>
                   <p className="text-xs text-amber-200/70 leading-relaxed">
-                    Our Paystack checkout is currently undergoing scheduled maintenance. Kindly complete your booking manually by sending your details to our WhatsApp concierge line and we will process your reservation immediately.
+                    Our Paystack checkout is currently undergoing scheduled maintenance. Kindly complete your booking manually by sending your details to our WhatsApp contact line and we will process your reservation immediately.
                   </p>
                 </div>
               </div>
@@ -463,7 +463,7 @@ export default function BookingPage() {
                   className="w-full py-4 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm uppercase tracking-widest transition-all shadow-lg flex items-center justify-center gap-3 group"
                 >
                   <MessageCircle className="w-5 h-5" />
-                  Book Now via WhatsApp Concierge
+                  Book Now via WhatsApp Contact
                   <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                 </a>
 
@@ -483,7 +483,7 @@ export default function BookingPage() {
                   50% Deposit Date-Lock Policy
                 </div>
                 <p>
-                  Your date is officially reserved upon receipt of a 50% deposit. Our concierge will send you payment account details immediately via WhatsApp. Remaining balance is due 14 days before your event.
+                  Your date is officially reserved upon receipt of a 50% deposit. Our contact team will send you payment account details immediately via WhatsApp. Remaining balance is due 14 days before your event.
                 </p>
               </div>
             </div>

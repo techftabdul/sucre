@@ -35,7 +35,7 @@ export default function Header() {
                 target="_blank" 
                 rel="noreferrer"
               >
-                WhatsApp Instant Concierge
+                WhatsApp Instant Contact
               </a>
             </span>
           </div>
@@ -60,7 +60,7 @@ export default function Header() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 sm:h-24 md:h-28 flex items-center justify-between gap-2">
           {/* Logo */}
           <Link to="/" className="group flex items-center shrink-0">
-            <SucreLogo className="h-12 sm:h-16 md:h-22 lg:h-28" />
+            <SucreLogo className="h-16 sm:h-20 md:h-24 lg:h-28" />
           </Link>
 
           {/* Desktop Nav */}
