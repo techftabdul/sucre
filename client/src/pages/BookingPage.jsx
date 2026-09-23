@@ -189,7 +189,19 @@ export default function BookingPage() {
       </div>
 
       {/* STEP PROGRESS BAR */}
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-4xl mx-auto space-y-3 px-1">
+        {/* Mobile Active Step Indicator */}
+        <div className="flex sm:hidden items-center justify-between bg-cathedral-card p-3 rounded-2xl border border-gold-500/30 text-xs">
+          <span className="font-semibold text-cathedral-ivory">
+            Step {currentStep} of 5: <span className="text-gold-300 font-bold">
+              {['Event Type', 'Guests', 'Hall & Tier', 'Add-ons', 'Checkout'][currentStep - 1]}
+            </span>
+          </span>
+          <span className="text-[10px] font-mono text-gold-400 font-bold bg-gold-400/10 px-2 py-0.5 rounded-full border border-gold-400/30">
+            {Math.round((currentStep / 5) * 100)}% Complete
+          </span>
+        </div>
+
         <div className="flex items-center justify-between relative">
           <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-cathedral-border -translate-y-1/2 z-0" />
           
@@ -206,7 +218,7 @@ export default function BookingPage() {
               <div key={s.step} className="relative z-10 flex flex-col items-center">
                 <button
                   onClick={() => s.step < currentStep && goToStep(s.step)}
-                  className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-xs transition-all duration-300 ${
+                  className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-bold text-xs transition-all duration-300 ${
                     isCompleted
                       ? 'bg-gold-400 text-cathedral-bg'
                       : isCurrent
@@ -214,7 +226,7 @@ export default function BookingPage() {
                       : 'bg-cathedral-elevated text-cathedral-muted border border-cathedral-border'
                   }`}
                 >
-                  {isCompleted ? <Check className="w-5 h-5 stroke-[3]" /> : s.step}
+                  {isCompleted ? <Check className="w-4 h-4 sm:w-5 sm:h-5 stroke-[3]" /> : s.step}
                 </button>
                 <span className={`text-[11px] font-medium tracking-wider uppercase mt-2 hidden sm:block ${
                   isCurrent ? 'text-gold-400 font-bold' : 'text-cathedral-muted'

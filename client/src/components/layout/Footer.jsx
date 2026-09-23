@@ -14,7 +14,7 @@ export default function Footer() {
           
           {/* Column 1: Brand Info */}
           <div className="space-y-4">
-            <SucreLogo className="h-28 md:h-36 lg:h-40" />
+            <SucreLogo className="h-16 sm:h-20 md:h-28 max-w-[220px] sm:max-w-none" />
             <p className="text-xs text-cathedral-muted leading-relaxed font-sans mt-3">
               Ibadan’s premier crown jewel for luxury wedding receptions, corporate galas, VIP banquets, and state events. Architectural magnificence redefined.
             </p>
@@ -89,8 +89,8 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-2.5">
                 <Mail className="w-4 h-4 text-gold-400 shrink-0" />
-                <a href="mailto:info@sucreevents.ng" className="hover:text-gold-300 transition-colors">
-                  info@sucreevents.ng
+                <a href="mailto:info@sucrecentre.com" className="hover:text-gold-300 transition-colors">
+                  info@sucrecentre.com
                 </a>
               </li>
             </ul>

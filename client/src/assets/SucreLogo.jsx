@@ -19,11 +19,11 @@ export default function SucreLogo({ className = "h-24 md:h-32", variant = "main"
   }
 
   return (
-    <div className="inline-flex items-center justify-start select-none shrink-0 overflow-visible py-1">
+    <div className="inline-flex items-center justify-start select-none shrink-0 overflow-visible py-1 max-w-[200px] xs:max-w-[260px] sm:max-w-none">
       <img 
         src={logoSrc} 
         alt="SUCRE Events Centre - The Cathedral" 
-        className={`w-auto object-contain scale-110 transition-transform duration-300 filter drop-shadow-[0_0_15px_rgba(212,175,55,0.45)] ${className}`} 
+        className={`w-auto max-w-full object-contain filter drop-shadow-[0_0_12px_rgba(212,175,55,0.45)] ${className}`} 
       />
     </div>
   );

@@ -18,7 +18,7 @@ export default function Header() {
   const isActive = (path) => location.pathname === path;
 
   return (
-    <header className="sticky top-0 z-50 w-full transition-all duration-300">
+    <header className="relative w-full z-30">
       {/* Top Brand Notification Bar */}
       <div className="bg-cathedral-bg/95 border-b border-gold-500/20 py-2 px-4 text-xs font-medium text-cathedral-ivory">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
@@ -57,10 +57,10 @@ export default function Header() {
 
       {/* Main Navbar */}
       <div className="bg-cathedral-card/90 backdrop-blur-md border-b border-cathedral-border/60 shadow-2xl">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-24 md:h-28 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 sm:h-24 md:h-28 flex items-center justify-between gap-2">
           {/* Logo */}
           <Link to="/" className="group flex items-center shrink-0">
-            <SucreLogo className="h-20 sm:h-24 md:h-28 lg:h-32" />
+            <SucreLogo className="h-12 sm:h-16 md:h-22 lg:h-28" />
           </Link>
 
           {/* Desktop Nav */}
