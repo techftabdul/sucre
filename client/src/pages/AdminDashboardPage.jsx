@@ -293,7 +293,7 @@ export default function AdminDashboardPage() {
                 <ul className="space-y-3">
                   <li className="flex justify-between border-b border-cathedral-border pb-2">
                     <span className="text-cathedral-muted">Capacity Range</span>
-                    <span className="font-bold text-cathedral-ivory">100 — 1,500+ Guests</span>
+                    <span className="font-bold text-cathedral-ivory">800 — 1,000 Guests</span>
                   </li>
                   <li className="flex justify-between border-b border-cathedral-border pb-2">
                     <span className="text-cathedral-muted">Standard Rate</span>

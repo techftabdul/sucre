@@ -86,7 +86,7 @@ export default function HomePage() {
           {/* Key Metrics */}
           <div className="pt-12 grid grid-cols-2 md:grid-cols-4 gap-6 border-t border-gold-500/20 max-w-4xl mx-auto text-left">
             <div className="bg-cathedral-card/40 p-4 rounded-2xl border border-white/5 backdrop-blur-sm">
-              <div className="text-2xl font-serif font-bold text-gold-gradient">1,500+</div>
+              <div className="text-2xl font-serif font-bold text-gold-gradient">1,000</div>
               <div className="text-xs text-cathedral-muted uppercase tracking-wider mt-1">Max Guest Capacity</div>
             </div>
             <div className="bg-cathedral-card/40 p-4 rounded-2xl border border-white/5 backdrop-blur-sm">

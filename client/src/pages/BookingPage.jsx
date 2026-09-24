@@ -199,7 +199,7 @@ export default function BookingPage() {
                 <input
                   type="range"
                   min="100"
-                  max="1500"
+                  max="1000"
                   step="50"
                   value={guestCount}
                   onChange={(e) => setGuestCount(Number(e.target.value))}
@@ -209,7 +209,7 @@ export default function BookingPage() {
                 <div className="flex justify-between text-xs text-cathedral-muted font-mono">
                   <span>100 (Intimate)</span>
                   <span>750 (Prestige)</span>
-                  <span>1,500+ (Cathedral)</span>
+                  <span>1,000 (Cathedral)</span>
                 </div>
               </div>
 

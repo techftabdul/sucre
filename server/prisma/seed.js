@@ -16,165 +16,68 @@ async function main() {
   await prisma.admin.deleteMany();
 
   // Seed Admin
-  const hashedPassword = await bcrypt.hash('admin123', 10);
+  const hashedPassword = await bcrypt.hash('Sucre2026!', 10);
   await prisma.admin.create({
     data: {
-      username: 'admin',
+      username: 'sucre_admin',
       email: 'admin@sucreevents.ng',
       password: hashedPassword,
       name: 'Cathedral Administrator',
       role: 'SUPER_ADMIN',
     },
   });
-  console.log('Admin account created: admin / admin123');
+  console.log('Admin account created: sucre_admin / Sucre2026!');
 
-  // Seed Halls (Grades 1 to 5)
-  const halls = [
-    {
-      grade: 1,
-      name: 'Intimate Sanctuary',
-      subtitle: 'Bespoke elegance for micro-weddings and private VIP dinners',
-      capacityMin: 100,
-      capacityMax: 250,
-      basePrice: 650000,
-      image: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1200&q=80',
-      description: 'An enchanting, climate-controlled space with crystal chandeliers, private foyer, and ambient mood lighting designed for executive meetings, intimate receptions, and private celebrations.',
-      features: JSON.stringify([
-        'Capacity: Up to 250 guests',
-        'Fully Air-Conditioned with 100% Power Backup',
-        'Private VIP Prep Suite',
-        'Dedicated Restrooms',
-        'Acoustic Soundproofing'
-      ])
-    },
-    {
-      grade: 2,
-      name: 'Classic Pavilion',
-      subtitle: 'Chic architectural setup with adaptable lighting & modern acoustics',
-      capacityMin: 250,
-      capacityMax: 450,
-      basePrice: 950000,
-      image: 'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=1200&q=80',
-      description: 'Versatile and sophisticated hall ideal for corporate galas, mid-scale wedding receptions, and milestone birthday banquets. Equipped with expansive elevated staging.',
-      features: JSON.stringify([
-        'Capacity: Up to 450 guests',
-        'State-of-the-Art LED Stage Rigging',
-        '2 VIP Executive Changing Rooms',
-        'Dedicated Catering Serving Bay',
-        'High-Speed Guest Wi-Fi'
-      ])
-    },
-    {
-      grade: 3,
-      name: 'Grand Arch Ballroom',
-      subtitle: 'Opulent hall showcasing high-vaulted ceilings & panoramic LED walls',
-      capacityMin: 450,
-      capacityMax: 700,
-      basePrice: 1400000,
-      image: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=1200&q=80',
-      description: 'Designed to impress. Features signature cathedral vault arches, massive 4K LED video screens, and a sprawling dance floor created for royal banquets and high-profile events.',
-      features: JSON.stringify([
-        'Capacity: Up to 700 guests',
-        'High-Vaulted Architectural Ceilings',
-        'Integrated 4K Ultra-HD LED Wall',
-        'Green Room & Media Control Booth',
-        'Ample Covered Parking for 300+ Vehicles'
-      ])
-    },
-    {
-      grade: 4,
-      name: 'Prestige Royal Suite',
-      subtitle: 'High-capacity luxury domain for majestic galas and royal weddings',
-      capacityMin: 700,
-      capacityMax: 900,
-      basePrice: 1950000,
-      image: 'https://images.unsplash.com/photo-1527529482837-4698179dc6ce?auto=format&fit=crop&w=1200&q=80',
-      description: 'A grand architectural marvel featuring double-tier balcony seating, custom gold-leaf trimming, and comprehensive event production infrastructure.',
-      features: JSON.stringify([
-        'Capacity: Up to 900 guests',
-        'Double-Tier Mezzanine Viewing Gallery',
-        'Executive Red-Carpet Entrance Foyer',
-        'Dual Catering Preparation Wings',
-        '24/7 Armed Security Escort Patrols'
-      ])
-    },
-    {
+  // Seed Flagship Hall
+  const cathedralHall = await prisma.hall.create({
+    data: {
       grade: 5,
-      name: 'The Cathedral Master Grandeur',
-      subtitle: 'The flagship crown jewel of Ibadan — Unlimited luxury & 1,500+ capacity',
-      capacityMin: 900,
-      capacityMax: 1500,
-      basePrice: 2600000,
+      name: 'The Cathedral',
+      subtitle: "Ibadan's Crown Jewel — Luxury Event Venue for Royal Celebrations",
+      capacityMin: 800,
+      capacityMax: 1000,
+      basePrice: 2800000, // Standard price
       image: 'https://images.unsplash.com/photo-1543968996-ee822b8176ba?auto=format&fit=crop&w=1200&q=80',
-      description: 'The ultimate pinnacle of event space in Oyo State. Combines breathtaking cathedral archways, massive dual LED walls, hydraulic stage lifts, and VIP presidential suites.',
+      description: 'An architectural masterpiece combining breathtaking cathedral archways, massive dual LED walls, hydraulic stage lifts, VIP presidential suites, and dual synchronized generators — designed for royal wedding receptions, high-stakes corporate galas, and VIP celebrations in Ibadan, Oyo State.',
       features: JSON.stringify([
-        'Capacity: 900 to 1,500+ guests',
+        'Capacity: 800 to 1,000 guests',
         'Exclusive Full-Venue Access',
         'Presidential VIP Holding Lounge',
         'Dual 500kVA Synchronized Heavy-Duty Generators',
-        'Helipad Access & Executive Motorcade Protocol'
+        'Fully Air-Conditioned with 100% Power Backup',
+        'Integrated 4K Ultra-HD LED Wall',
+        'State-of-the-Art LED Stage Rigging',
+        'Green Room & Media Control Booth',
+        'Ample Covered Parking for 300+ Vehicles',
+        'Curated Security & Event Protocol Officers'
       ])
-    },
-  ];
+    }
+  });
+  console.log('Seeded Flagship Hall (The Cathedral).');
 
-  for (const hall of halls) {
-    await prisma.hall.create({ data: hall });
-  }
-  console.log('Seeded 5 Halls (Grades 1 to 5).');
-
-  // Seed Packages
-  const packages = [
-    {
-      tier: 'Classic',
-      name: 'Classic Cathedral Package',
-      price: 1250000,
-      badge: 'Standard Luxury',
-      description: 'Essential luxury setup including venue rental, standard banqueting chairs, tables, sound system, and basic lighting.',
+  // Seed Flagship Package
+  const flagshipPkg = await prisma.package.create({
+    data: {
+      tier: 'Flagship',
+      name: 'The Cathedral All-Inclusive Package',
+      price: 0, // Included in hall rental
+      badge: 'Included in Venue',
+      description: 'The complete Cathedral experience — venue rental, full production rig, VIP lounges, security, and all standard event infrastructure included.',
       features: JSON.stringify([
-        'Full Hall Access for 10 hours',
-        'Standard Banquet Tables & Gold Chiavari Chairs',
-        'Base Sound System & Wireless Mics',
-        'Standard Ambient Lighting',
-        'Standard Security & Parking Management'
-      ])
-    },
-    {
-      tier: 'Silver',
-      name: 'Silver Cathedral Experience',
-      price: 1750000,
-      badge: 'Most Popular',
-      description: 'Our signature event experience package combining venue rental, LED screen displays, enhanced decor lighting, DJ service, and security.',
-      features: JSON.stringify([
-        'Full Hall Access for 14 hours',
-        'Premium Chiavari / Luxury Dior Seating',
-        'Integrated 4K LED Screen Backdrop Display',
+        'Exclusive Full-Venue Access (Up to 14 hours)',
+        'Premium Chiavari / Luxury Dior Seating for All Guests',
+        'Integrated 4K Ultra-HD LED Screen Backdrop Display',
         'Professional Event DJ & Intelligent Moving-Head Lights',
-        'Dedicated VIP Suite with Complimentary Refreshments',
-        'Armed Security & Traffic Management Team'
+        'Dedicated Presidential VIP Holding Lounge',
+        'Armed Security & Traffic Management Team',
+        'Dual 500kVA Synchronized Heavy-Duty Generators',
+        'Fully Air-Conditioned with 100% Power Backup',
+        'Ample Covered Parking for 300+ Vehicles',
+        'Curated Event Protocol Officers'
       ])
-    },
-    {
-      tier: 'Gold',
-      name: 'Gold Royal Cathedral Sovereign',
-      price: 2800000,
-      badge: 'All-Inclusive Royalty',
-      description: 'The ultimate royal experience. Complete full-day venue reservation, 360-degree event production, red carpet setup, photography, and VIP concierge.',
-      features: JSON.stringify([
-        'Exclusive 24-Hour Venue Access',
-        'Custom Floral Decor & Gold Crystal Table Settings',
-        'Dual 4K LED Screen Displays & Live Broadcast Feed',
-        'Full Executive Security Protocol & VIP Escorts',
-        'Presidential VIP Bridal Lounge with Private Chef Service',
-        '4K Drone Photography & Videography Package Included',
-        'Complimentary 50-Guest Welcome Cocktail Bar'
-      ])
-    },
-  ];
-
-  for (const pkg of packages) {
-    await prisma.package.create({ data: pkg });
-  }
-  console.log('Seeded 3 Experience Packages.');
+    }
+  });
+  console.log('Seeded Flagship Experience Package.');
 
   // Seed Addons
   const addons = [
@@ -234,43 +137,7 @@ async function main() {
   }
   console.log('Seeded 7 Add-ons.');
 
-  // Seed sample initial bookings
-  const cathedralHall = await prisma.hall.findFirst({ where: { grade: 5 } });
-  const silverPkg = await prisma.package.findFirst({ where: { tier: 'Silver' } });
-
-  if (cathedralHall && silverPkg) {
-    const booking = await prisma.booking.create({
-      data: {
-        reference: 'SUCRE-2026-9812',
-        customerName: 'Chief & Mrs. Adebayo Adeleke',
-        customerEmail: 'adebayo.adeleke@example.com',
-        customerPhone: '08031234567',
-        eventType: 'Royal Wedding Ceremony & Reception',
-        guestCount: 1000,
-        eventDate: new Date('2026-11-28'),
-        hallId: cathedralHall.id,
-        packageId: silverPkg.id,
-        totalAmount: 4350000,
-        depositAmount: 2175000,
-        balanceAmount: 2175000,
-        status: 'DEPOSIT_PAID',
-        paystackRef: 'PST_TEST_REF_881920',
-        notes: 'Requested gold table accents and extra security guards.',
-      }
-    });
-
-    await prisma.payment.create({
-      data: {
-        reference: 'PAY-881920-SUCRE',
-        bookingId: booking.id,
-        amount: 2175000,
-        gateway: 'PAYSTACK',
-        status: 'SUCCESS',
-        channel: 'card',
-        paystackRef: 'PST_TEST_REF_881920'
-      }
-    });
-  }
+  // Note: We intentionally do NOT seed any bookings to start analytics from ZERO.
 
   console.log('Database seeding completed successfully!');
 }
