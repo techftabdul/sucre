@@ -54,7 +54,7 @@ export default function HomePage() {
               <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-6">
                 <div className="flex items-center gap-2">
                   <Flame className="w-5 h-5 text-red-400 animate-pulse" />
-                  <span className="text-red-300 font-bold text-xs uppercase tracking-widest">October Special</span>
+                  <span className="text-red-300 font-bold text-xs uppercase tracking-widest">Ends October 30th</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="text-cathedral-muted line-through text-sm font-mono">{formatCurrency(HALL_STANDARD_PRICE)}</span>
@@ -185,7 +185,7 @@ export default function HomePage() {
             <div className="bg-gradient-to-r from-red-600 via-red-500 to-orange-500 py-3 px-6 flex items-center justify-center gap-3 animate-promo-pulse">
               <Tag className="w-5 h-5 text-white" />
               <span className="text-white font-bold text-sm md:text-base uppercase tracking-wider">
-                Special Offer: {formatCurrency(HALL_PROMO_PRICE)} — Ending in October!
+                Special Offer: {formatCurrency(HALL_PROMO_PRICE)} — Ends October 30th!
               </span>
               <Flame className="w-5 h-5 text-yellow-300 animate-pulse" />
             </div>
@@ -200,7 +200,7 @@ export default function HomePage() {
                 <div className="text-center sm:text-right space-y-2">
                   <div className="text-xs uppercase tracking-widest text-red-400 font-bold flex items-center justify-center sm:justify-end gap-1.5">
                     <Flame className="w-3.5 h-3.5" />
-                    October Promotional Price
+                    October 30th Promo Price
                   </div>
                   <div className="text-4xl md:text-5xl font-serif font-bold animate-gold-shimmer">{formatCurrency(HALL_PROMO_PRICE)}</div>
                   <div className="text-xs text-gold-300 font-mono">Save {formatCurrency(HALL_STANDARD_PRICE - HALL_PROMO_PRICE)}</div>
@@ -237,62 +237,61 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* FACILITIES SHOWCASE — Full Gallery */}
+      {/* VIRTUAL TOUR — Video Showcase */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         <div className="text-center space-y-3">
           <div className="text-xs uppercase tracking-[0.3em] font-bold text-gold-400">Virtual Tour</div>
           <h2 className="text-3xl md:text-5xl font-serif font-bold text-cathedral-ivory">Our Stunning Facilities</h2>
           <p className="max-w-xl mx-auto text-xs md:text-sm text-cathedral-muted">
-            Take a visual tour through The Cathedral — from grand ballroom arches to VIP suites and outdoor parking pavilions.
+            Take an immersive video tour through The Cathedral — from grand ballroom archways to VIP suites, state-of-the-art stage rigs, and outdoor pavilions.
           </p>
         </div>
 
-        <FacilitiesCarousel
-          showVideo={false}
-          autoPlay={true}
-          interval={4500}
-          height="h-[300px] md:h-[500px]"
-          showDots={true}
-          showArrows={true}
-          className="shadow-lg"
-        />
+        <div className="relative rounded-3xl overflow-hidden border border-gold-500/30 shadow-2xl">
+          <video
+            src={facilityVideo}
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-[300px] md:h-[560px] object-cover"
+          />
+          {/* Subtle bottom gradient overlay with venue name */}
+          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-cathedral-bg to-transparent pointer-events-none" />
+          <div className="absolute bottom-6 left-6 right-6 flex items-end justify-between z-10">
+            <div className="bg-glass px-5 py-3 rounded-xl border border-gold-500/20 backdrop-blur-md">
+              <div className="text-[10px] uppercase tracking-widest text-gold-400 font-bold">Now Showing</div>
+              <div className="text-sm font-serif font-bold text-cathedral-ivory mt-0.5">The Cathedral — SUCRE Events Centre</div>
+            </div>
+          </div>
+        </div>
       </section>
 
-      {/* EXPERIENCE PACKAGES HIGHLIGHT */}
+      {/* FLAGSHIP PACKAGE HIGHLIGHT */}
       <section className="bg-cathedral-card/50 py-20 border-y border-gold-500/20 relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
           <div className="text-center space-y-3">
-            <div className="text-xs uppercase tracking-[0.3em] font-bold text-gold-400">Bespoke Experience Tiers</div>
-            <h2 className="text-3xl md:text-5xl font-serif font-bold text-cathedral-ivory">Curated Event Packages</h2>
+            <div className="text-xs uppercase tracking-[0.3em] font-bold text-gold-400">All-Inclusive Flagship Package</div>
+            <h2 className="text-3xl md:text-5xl font-serif font-bold text-cathedral-ivory">Everything Is Included</h2>
             <p className="max-w-xl mx-auto text-xs md:text-sm text-cathedral-muted">
-              Select an all-inclusive production tier designed to take care of lighting, sound, VIP suites, and security.
+              Your venue rental comes complete with full production, VIP lounges, security, and all event infrastructure — at no extra tier cost.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {packages.map((pkg) => (
-              <div 
-                key={pkg.id} 
-                className={`bg-cathedral-card rounded-3xl p-8 border transition-all duration-300 relative flex flex-col justify-between ${
-                  pkg.tier === 'Silver' 
-                    ? 'border-gold-400 shadow-gold-glow bg-gradient-to-b from-cathedral-card to-gold-900/10 scale-105' 
-                    : 'border-cathedral-border hover:border-gold-500/30'
-                }`}
-              >
-                {pkg.badge && (
-                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-gold-gradient text-cathedral-bg text-[10px] uppercase font-bold tracking-widest px-4 py-1 rounded-full shadow-lg">
-                    {pkg.badge}
-                  </div>
-                )}
+          {packages.map((pkg) => (
+            <div key={pkg.id} className="bg-cathedral-card rounded-3xl p-8 md:p-12 border-2 border-gold-400/50 shadow-gold-glow relative">
+              {pkg.badge && (
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gold-gradient text-cathedral-bg text-[11px] uppercase font-bold tracking-widest px-6 py-1.5 rounded-full shadow-lg">
+                  {pkg.badge}
+                </div>
+              )}
 
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
                 <div className="space-y-6">
-                  <div className="border-b border-cathedral-border pb-6">
-                    <div className="text-xs uppercase tracking-widest text-gold-400 font-semibold">{pkg.tier} Tier</div>
+                  <div>
+                    <div className="text-xs uppercase tracking-widest text-gold-400 font-semibold">{pkg.tier} Package</div>
                     <h3 className="text-2xl font-serif font-bold text-cathedral-ivory mt-1">{pkg.name}</h3>
-                    <div className="mt-4 flex items-baseline gap-1">
-                      <span className="text-3xl font-serif font-bold text-gold-gradient">{formatCurrency(pkg.price)}</span>
-                      <span className="text-xs text-cathedral-muted">/ package</span>
-                    </div>
+                    <p className="text-xs text-cathedral-muted mt-2 leading-relaxed">{pkg.description}</p>
                   </div>
 
                   <ul className="space-y-3 text-xs text-cathedral-muted">
@@ -305,21 +304,22 @@ export default function HomePage() {
                   </ul>
                 </div>
 
-                <div className="pt-8">
+                <div className="text-center space-y-4">
+                  <div className="text-xs uppercase tracking-widest text-cathedral-muted font-semibold">Package is Included in Venue Rental</div>
+                  <div className="text-4xl md:text-5xl font-serif font-bold animate-gold-shimmer">{formatCurrency(HALL_PROMO_PRICE)}</div>
+                  <div className="text-xs text-cathedral-muted font-mono">Promo price — Ends October 30th</div>
                   <Link
                     to="/book"
-                    className={`w-full py-3.5 rounded-full font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${
-                      pkg.tier === 'Silver'
-                        ? 'bg-gold-gradient text-cathedral-bg shadow-md hover:brightness-110'
-                        : 'bg-cathedral-elevated border border-gold-500/30 text-gold-300 hover:bg-gold-500/10'
-                    }`}
+                    className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-gold-gradient text-cathedral-bg font-bold text-sm uppercase tracking-widest hover:brightness-110 transition-all shadow-gold-glow group"
                   >
-                    Select {pkg.tier} Package
+                    <Calendar className="w-5 h-5" />
+                    Book This Package
+                    <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </div>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -351,7 +351,7 @@ export default function HomePage() {
                 Open Google Maps App
               </a>
               <a
-                href="https://wa.me/2348174303757?text=Hello%20SUCRE%20Events%20Centre,%20please%20send%20me%20the%20exact%20GPS%20location%20and%20driving%20directions."
+                href="https://wa.me/2349058804253?text=Hello%20SUCRE%20Events%20Centre,%20please%20send%20me%20the%20exact%20GPS%20location%20and%20driving%20directions."
                 target="_blank"
                 rel="noreferrer"
                 className="px-6 py-3 rounded-full bg-cathedral-elevated border border-gold-500/40 text-gold-300 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-gold-500/10 transition-all"
@@ -387,20 +387,20 @@ export default function HomePage() {
               Need Immediate Date Reservation Assistance?
             </h3>
             <p className="text-xs md:text-sm text-cathedral-muted max-w-xl">
-              Connect directly with our Chief Event Coordinator via phone or official WhatsApp contact line (08174303757).
+              Connect directly with our Chief Event Coordinator via phone or official WhatsApp contact line (09058804253).
             </p>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 shrink-0 w-full md:w-auto">
             <a
-              href="tel:08174303757"
+              href="tel:09058804253"
               className="px-6 py-3.5 rounded-full bg-cathedral-bg border border-gold-500/40 text-gold-300 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-gold-500/10 transition-colors"
             >
               <Phone className="w-4 h-4 text-gold-400" />
-              Call 08174303757
+              Call 09058804253
             </a>
             <a
-              href="https://wa.me/2348174303757?text=Hello%20SUCRE%20Events%20Centre,%20I%20want%20to%20check%20date%20availability."
+              href="https://wa.me/2349058804253?text=Hello%20SUCRE%20Events%20Centre,%20I%20want%20to%20check%20date%20availability."
               target="_blank"
               rel="noreferrer"
               className="px-6 py-3.5 rounded-full bg-emerald-600 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-emerald-500 transition-colors shadow-lg"

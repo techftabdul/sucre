@@ -81,7 +81,7 @@ export default function HallsPage() {
           <div className="bg-gradient-to-r from-red-600 via-red-500 to-orange-500 py-3 px-6 flex items-center justify-center gap-3 animate-promo-pulse">
             <Tag className="w-5 h-5 text-white" />
             <span className="text-white font-bold text-sm md:text-base uppercase tracking-wider">
-              Special Offer: {formatCurrency(HALL_PROMO_PRICE)} — Ending in October!
+              Special Offer: {formatCurrency(HALL_PROMO_PRICE)} — Ends October 30th!
             </span>
             <Flame className="w-5 h-5 text-yellow-300 animate-pulse" />
           </div>
@@ -114,7 +114,7 @@ export default function HallsPage() {
                 <div>
                   <div className="text-xs uppercase tracking-widest text-red-400 font-bold flex items-center justify-center gap-1.5 mb-2">
                     <Flame className="w-3.5 h-3.5" />
-                    October Promotional Price
+                    October 30th Promo Price
                   </div>
                   <div className="text-4xl md:text-5xl font-serif font-bold animate-gold-shimmer">{formatCurrency(HALL_PROMO_PRICE)}</div>
                   <div className="text-xs text-gold-300 font-mono mt-2">You save {formatCurrency(HALL_STANDARD_PRICE - HALL_PROMO_PRICE)}</div>

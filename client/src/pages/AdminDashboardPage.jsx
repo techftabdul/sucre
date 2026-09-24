@@ -147,7 +147,7 @@ export default function AdminDashboardPage() {
                 <div className="text-2xl font-serif font-bold text-cathedral-ivory">
                   {analytics.statusCounts?.TOTAL || 0}
                 </div>
-                <div className="text-[10px] text-cathedral-muted">Across all hall grades</div>
+                <div className="text-[10px] text-cathedral-muted">Across all bookings in the database</div>
               </div>
             </div>
 
@@ -280,53 +280,78 @@ export default function AdminDashboardPage() {
           </div>
         )}
 
-        {/* TAB 3: INVENTORY */}
         {activeTab === 'inventory' && (
           <div className="space-y-6">
-            <h3 className="font-serif font-bold text-xl text-cathedral-ivory">Hall & Package Rates Management</h3>
+            <h3 className="font-serif font-bold text-xl text-cathedral-ivory">Venue & Rates Management</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
-              <div className="bg-cathedral-card p-6 rounded-2xl border border-cathedral-border space-y-4">
-                <h4 className="font-serif font-bold text-gold-400 text-base">Halls Inventory (Grades 1 to 5)</h4>
+              {/* Flagship Venue Card */}
+              <div className="bg-cathedral-card p-6 rounded-2xl border border-gold-400/50 shadow-gold-glow space-y-4">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-serif font-bold text-gold-400 text-base">Flagship Venue — The Cathedral</h4>
+                  <span className="bg-gold-400/20 text-gold-300 text-[10px] px-2.5 py-0.5 rounded-full border border-gold-400/30 font-bold uppercase">Active</span>
+                </div>
                 <ul className="space-y-3">
                   <li className="flex justify-between border-b border-cathedral-border pb-2">
-                    <span>Grade 1: Intimate Sanctuary (250 Max)</span>
-                    <span className="font-bold text-gold-300">₦650,000</span>
+                    <span className="text-cathedral-muted">Capacity Range</span>
+                    <span className="font-bold text-cathedral-ivory">100 — 1,500+ Guests</span>
                   </li>
                   <li className="flex justify-between border-b border-cathedral-border pb-2">
-                    <span>Grade 2: Classic Pavilion (450 Max)</span>
-                    <span className="font-bold text-gold-300">₦950,000</span>
+                    <span className="text-cathedral-muted">Standard Rate</span>
+                    <span className="font-bold text-cathedral-ivory">₦2,800,000</span>
                   </li>
                   <li className="flex justify-between border-b border-cathedral-border pb-2">
-                    <span>Grade 3: Grand Arch Ballroom (700 Max)</span>
-                    <span className="font-bold text-gold-300">₦1,400,000</span>
-                  </li>
-                  <li className="flex justify-between border-b border-cathedral-border pb-2">
-                    <span>Grade 4: Prestige Royal Suite (900 Max)</span>
-                    <span className="font-bold text-gold-300">₦1,950,000</span>
+                    <span className="text-red-400 font-semibold">October Promo Rate (ends Oct 30)</span>
+                    <span className="font-bold text-red-400">₦2,200,000</span>
                   </li>
                   <li className="flex justify-between">
-                    <span>Grade 5: The Cathedral Master Grandeur (1,500+ Max)</span>
-                    <span className="font-bold text-gold-gradient font-serif">₦2,600,000</span>
+                    <span className="text-cathedral-muted">Required Deposit</span>
+                    <span className="font-bold text-emerald-400">50% upfront</span>
                   </li>
                 </ul>
               </div>
 
+              {/* All-Inclusive Package Card */}
               <div className="bg-cathedral-card p-6 rounded-2xl border border-cathedral-border space-y-4">
-                <h4 className="font-serif font-bold text-gold-400 text-base">Production Experience Packages</h4>
-                <ul className="space-y-3">
-                  <li className="flex justify-between border-b border-cathedral-border pb-2">
-                    <span>Classic Experience</span>
-                    <span className="font-bold text-gold-300">₦1,250,000</span>
-                  </li>
-                  <li className="flex justify-between border-b border-cathedral-border pb-2">
-                    <span>Silver Experience (Most Popular)</span>
-                    <span className="font-bold text-gold-300">₦1,750,000</span>
-                  </li>
-                  <li className="flex justify-between">
-                    <span>Gold Royal Cathedral Sovereign</span>
-                    <span className="font-bold text-gold-gradient font-serif">₦2,800,000</span>
-                  </li>
+                <h4 className="font-serif font-bold text-gold-400 text-base">All-Inclusive Package (Included in Venue)</h4>
+                <ul className="space-y-2 text-cathedral-muted">
+                  {[
+                    'Exclusive Full-Venue Access (Up to 14 hours)',
+                    'Premium Chiavari / Luxury Dior Seating',
+                    'Integrated 4K Ultra-HD LED Screen Display',
+                    'Professional Event DJ & Moving-Head Lights',
+                    'Dedicated Presidential VIP Holding Lounge',
+                    'Armed Security & Traffic Management Team',
+                    'Dual 500kVA Synchronized Generators',
+                    'Fully Air-Conditioned with 100% Power Backup',
+                    'Covered Parking for 300+ Vehicles',
+                  ].map((feat, i) => (
+                    <li key={i} className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-gold-400 shrink-0" />
+                      {feat}
+                    </li>
+                  ))}
                 </ul>
+              </div>
+            </div>
+
+            {/* Add-ons Rates Card */}
+            <div className="bg-cathedral-card p-6 rounded-2xl border border-cathedral-border space-y-4">
+              <h4 className="font-serif font-bold text-gold-400 text-base">Optional Add-on Rates</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+                {[
+                  { name: 'Gourmet 3-Course Buffet', rate: '₦12,000 / guest' },
+                  { name: 'Signature Floral Ceiling Canopy', rate: '₦450,000 / event' },
+                  { name: 'Executive Live DJ & Line-Array Sound', rate: '₦250,000 / event' },
+                  { name: 'Executive Armed Security (10 Officers)', rate: '₦180,000 / event' },
+                  { name: '4K Cinema Videography & Drone', rate: '₦350,000 / event' },
+                  { name: 'Presidential VIP Lounge & Champagne Bar', rate: '₦150,000 / event' },
+                  { name: 'Synchronized Heavy Generator & Backup AC', rate: '₦200,000 / event' },
+                ].map((addon, i) => (
+                  <div key={i} className="bg-cathedral-elevated rounded-xl p-3 border border-cathedral-border flex justify-between items-center gap-3">
+                    <span className="text-cathedral-muted">{addon.name}</span>
+                    <span className="font-bold text-gold-300 shrink-0">{addon.rate}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>

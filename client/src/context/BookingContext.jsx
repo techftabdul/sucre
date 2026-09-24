@@ -29,54 +29,26 @@ const FLAGSHIP_HALL = {
   ],
 };
 
-// ─── Experience Packages ──────────────────────────────────────────────────────
+// ─── Single Flagship Package ──────────────────────────────────────────────────
 const STATIC_PACKAGES = [
   {
-    id: 'pkg-classic',
-    tier: 'Classic',
-    name: 'Classic Cathedral Package',
-    price: 1250000,
-    badge: 'Standard Luxury',
-    description: 'Essential luxury setup including venue rental, standard banqueting chairs, tables, sound system, and basic lighting.',
+    id: 'pkg-flagship',
+    tier: 'Flagship',
+    name: 'The Cathedral All-Inclusive Package',
+    price: 0, // Package is included in the hall rental price
+    badge: 'Included in Venue',
+    description: 'The complete Cathedral experience — venue rental, full production rig, VIP lounges, security, and all standard event infrastructure included.',
     features: JSON.stringify([
-      'Full Hall Access for 10 hours',
-      'Standard Banquet Tables & Gold Chiavari Chairs',
-      'Base Sound System & Wireless Mics',
-      'Standard Ambient Lighting',
-      'Standard Security & Parking Management'
-    ])
-  },
-  {
-    id: 'pkg-silver',
-    tier: 'Silver',
-    name: 'Silver Cathedral Experience',
-    price: 1750000,
-    badge: 'Most Popular',
-    description: 'Our signature event experience package combining venue rental, LED screen displays, enhanced decor lighting, DJ service, and security.',
-    features: JSON.stringify([
-      'Full Hall Access for 14 hours',
-      'Premium Chiavari / Luxury Dior Seating',
-      'Integrated 4K LED Screen Backdrop Display',
+      'Exclusive Full-Venue Access (Up to 14 hours)',
+      'Premium Chiavari / Luxury Dior Seating for All Guests',
+      'Integrated 4K Ultra-HD LED Screen Backdrop Display',
       'Professional Event DJ & Intelligent Moving-Head Lights',
-      'Dedicated VIP Suite with Complimentary Refreshments',
-      'Armed Security & Traffic Management Team'
-    ])
-  },
-  {
-    id: 'pkg-gold',
-    tier: 'Gold',
-    name: 'Gold Royal Cathedral Sovereign',
-    price: 2800000,
-    badge: 'All-Inclusive Royalty',
-    description: 'The ultimate royal experience. Complete full-day venue reservation, 360-degree event production, red carpet setup, photography, and VIP contact service.',
-    features: JSON.stringify([
-      'Exclusive 24-Hour Venue Access',
-      'Custom Floral Decor & Gold Crystal Table Settings',
-      'Dual 4K LED Screen Displays & Live Broadcast Feed',
-      'Full Executive Security Protocol & VIP Escorts',
-      'Presidential VIP Bridal Lounge with Private Chef Service',
-      '4K Drone Photography & Videography Package Included',
-      'Complimentary 50-Guest Welcome Cocktail Bar'
+      'Dedicated Presidential VIP Holding Lounge',
+      'Armed Security & Traffic Management Team',
+      'Dual 500kVA Synchronized Heavy-Duty Generators',
+      'Fully Air-Conditioned with 100% Power Backup',
+      'Ample Covered Parking for 300+ Vehicles',
+      'Curated Event Protocol Officers',
     ])
   }
 ];
@@ -182,9 +154,7 @@ export function BookingProvider({ children }) {
   // Wizard state
   const [selectedEventType, setSelectedEventType] = useState('Wedding Reception');
   const [guestCount, setGuestCount] = useState(500);
-  const [selectedPackage, setSelectedPackage] = useState(
-    STATIC_PACKAGES.find(p => p.tier === 'Silver') || STATIC_PACKAGES[0]
-  );
+  const [selectedPackage, setSelectedPackage] = useState(STATIC_PACKAGES[0]);
   const [selectedAddonIds, setSelectedAddonIds] = useState([]);
   const [customerInfo, setCustomerInfo] = useState({
     name: '',

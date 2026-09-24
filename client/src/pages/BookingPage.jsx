@@ -57,7 +57,7 @@ export default function BookingPage() {
     return encodeURIComponent(lines.filter(l => l !== undefined).join('\n'));
   };
 
-  const whatsAppHref = `https://wa.me/2348174303757?text=${buildWhatsAppMessage()}`;
+  const whatsAppHref = `https://wa.me/2349058804253?text=${buildWhatsAppMessage()}`;
 
   const eventTypes = [
     { name: 'Wedding Ceremony & Reception', icon: '💍', description: 'Royal wedding banquets & bridal showcases' },
@@ -306,39 +306,25 @@ export default function BookingPage() {
                 </div>
               </div>
 
-              {/* Experience Tier Selector */}
+              {/* Single Flagship Package — Auto-Selected */}
               <div className="space-y-3 pt-4 border-t border-cathedral-border">
                 <label className="text-xs font-bold uppercase tracking-widest text-gold-400 block">
-                  Select Production Experience Tier:
+                  Included Package:
                 </label>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  {packages.map((pkg) => {
-                    const isSelected = selectedPackage?.id === pkg.id;
-                    return (
-                      <div
-                        key={pkg.id}
-                        onClick={() => setSelectedPackage(pkg)}
-                        className={`p-5 rounded-2xl border cursor-pointer transition-all relative flex flex-col justify-between ${
-                          isSelected
-                            ? 'border-gold-400 bg-gold-500/15 shadow-gold-glow'
-                            : 'border-cathedral-border bg-cathedral-elevated hover:border-gold-500/30'
-                        }`}
-                      >
-                        {pkg.badge && (
-                          <span className="text-[9px] uppercase tracking-widest font-bold text-cathedral-bg bg-gold-400 px-2.5 py-0.5 rounded-full absolute -top-2.5 left-4">
-                            {pkg.badge}
-                          </span>
-                        )}
-                        <div>
-                          <div className="font-serif font-bold text-base text-cathedral-ivory">{pkg.name}</div>
-                          <div className="text-[11px] text-cathedral-muted mt-1">{pkg.tier} Tier</div>
-                        </div>
-                        <div className="mt-4 pt-3 border-t border-cathedral-border/50">
-                          <div className="text-base font-serif font-bold text-gold-gradient">{formatCurrency(pkg.price)}</div>
-                        </div>
-                      </div>
-                    );
-                  })}
+                <div className="p-5 rounded-2xl border border-gold-400 bg-gold-500/10 shadow-gold-glow relative">
+                  <span className="text-[9px] uppercase tracking-widest font-bold text-cathedral-bg bg-gold-400 px-2.5 py-0.5 rounded-full absolute -top-2.5 left-4">
+                    {packages[0]?.badge}
+                  </span>
+                  <div className="font-serif font-bold text-base text-cathedral-ivory">{packages[0]?.name}</div>
+                  <div className="text-[11px] text-cathedral-muted mt-1">Fully included in your venue rental — no extra tier cost</div>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {(typeof packages[0]?.features === 'string' ? JSON.parse(packages[0].features) : packages[0]?.features || []).slice(0,4).map((feat, i) => (
+                      <span key={i} className="text-[10px] bg-cathedral-elevated border border-cathedral-border rounded-full px-2.5 py-1 text-cathedral-muted flex items-center gap-1">
+                        <CheckCircle2 className="w-3 h-3 text-gold-400 shrink-0" />{feat}
+                      </span>
+                    ))}
+                    <span className="text-[10px] text-gold-400 font-bold px-2.5 py-1">+ more included</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -520,11 +506,11 @@ export default function BookingPage() {
                 </a>
 
                 <a
-                  href="tel:08174303757"
+                  href="tel:09058804253"
                   className="w-full py-3.5 rounded-full bg-cathedral-elevated border border-gold-500/30 text-gold-300 font-bold text-xs uppercase tracking-widest hover:bg-gold-500/10 transition-all flex items-center justify-center gap-2"
                 >
                   <Phone className="w-4 h-4 text-gold-400" />
-                  Or Call Us Directly: 08174303757
+                  Or Call Us Directly: 09058804253
                 </a>
               </div>
 

@@ -25,13 +25,13 @@ export default function Header() {
           <div className="flex items-center gap-4 text-cathedral-muted">
             <span className="flex items-center gap-1.5 hover:text-gold-400 transition-colors">
               <Phone className="w-3.5 h-3.5 text-gold-400" />
-              <a href="tel:08174303757" className="tracking-wide">08174303757</a>
+              <a href="tel:09058804253" className="tracking-wide">09058804253</a>
             </span>
             <span className="hidden md:inline text-gold-500/30">|</span>
             <span className="hidden md:flex items-center gap-1.5 text-emerald-400 hover:text-emerald-300 transition-colors">
               <MessageCircle className="w-3.5 h-3.5 fill-emerald-500/20" />
               <a 
-                href="https://wa.me/2348174303757?text=Hello%20SUCRE%20Events%20Centre,%20I%20would%20like%20to%20inquire%20about%20booking%20the%20Cathedral." 
+                href="https://wa.me/2349058804253?text=Hello%20SUCRE%20Events%20Centre,%20I%20would%20like%20to%20inquire%20about%20booking%20the%20Cathedral." 
                 target="_blank" 
                 rel="noreferrer"
               >
@@ -134,11 +134,11 @@ export default function Header() {
           <div className="pt-4 border-t border-cathedral-border/50 flex flex-col gap-3 text-xs text-cathedral-muted">
             <div className="flex items-center gap-2">
               <Phone className="w-4 h-4 text-gold-400" />
-              <span>08174303757</span>
+              <span>09058804253</span>
             </div>
             <div className="flex items-center gap-2 text-emerald-400">
               <MessageCircle className="w-4 h-4" />
-              <a href="https://wa.me/2348174303757" target="_blank" rel="noreferrer">
+              <a href="https://wa.me/2349058804253" target="_blank" rel="noreferrer">
                 Chat on WhatsApp
               </a>
             </div>

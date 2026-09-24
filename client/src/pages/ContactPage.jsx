@@ -44,8 +44,8 @@ export default function ContactPage() {
               </div>
               <div>
                 <div className="font-bold text-cathedral-ivory text-sm">Official Hotline</div>
-                <a href="tel:08174303757" className="text-gold-300 font-mono text-base font-bold hover:underline">
-                  08174303757
+                <a href="tel:09058804253" className="text-gold-300 font-mono text-base font-bold hover:underline">
+                  09058804253
                 </a>
                 <p className="text-[11px] text-cathedral-muted mt-0.5">Available 8:00 AM - 8:00 PM (Mon - Sun)</p>
               </div>
@@ -58,12 +58,12 @@ export default function ContactPage() {
               <div>
                 <div className="font-bold text-cathedral-ivory text-sm">WhatsApp Instant Desk</div>
                 <a 
-                  href="https://wa.me/2348174303757?text=Hello%20SUCRE%20Events%20Centre,%20I%20want%20to%20inquire%20about%20a%20hall%20reservation."
+                  href="https://wa.me/2349058804253?text=Hello%20SUCRE%20Events%20Centre,%20I%20want%20to%20inquire%20about%20a%20hall%20reservation."
                   target="_blank"
                   rel="noreferrer"
                   className="text-emerald-400 font-semibold hover:underline block mt-0.5"
                 >
-                  Click to Chat Directly (08174303757)
+                  Click to Chat Directly (09058804253)
                 </a>
               </div>
             </div>

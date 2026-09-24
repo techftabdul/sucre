@@ -1,7 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import SucreLogo from '../../assets/SucreLogo';
-import { Phone, MessageCircle, MapPin, Instagram, Facebook, ShieldCheck, Mail, ArrowUpRight } from 'lucide-react';
+import { Phone, MessageCircle, MapPin, Instagram, ShieldCheck, Mail, ArrowUpRight } from 'lucide-react';
+
+// Inline TikTok SVG (not in lucide-react)
+function TikTokIcon({ className }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V9.07a8.16 8.16 0 0 0 4.77 1.52V7.14a4.85 4.85 0 0 1-1-.45z"/>
+    </svg>
+  );
+}
 
 export default function Footer() {
   return (
@@ -10,7 +19,7 @@ export default function Footer() {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-32 bg-gold-500/5 blur-3xl rounded-full pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col items-center justify-center text-center space-y-12">
-        
+
         {/* Brand Header */}
         <div className="flex flex-col items-center space-y-4">
           <SucreLogo className="h-16 sm:h-20 md:h-28" />
@@ -28,27 +37,29 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Social Handles */}
           <div className="flex items-center gap-3">
-            <a 
-              href="https://instagram.com/sucreeventcenter" 
-              target="_blank" 
-              rel="noreferrer" 
+            <a
+              href="https://instagram.com/sucreeventcenter"
+              target="_blank"
+              rel="noreferrer"
               className="w-10 h-10 rounded-full bg-cathedral-card border border-gold-500/30 flex items-center justify-center text-gold-400 hover:bg-gold-400 hover:text-cathedral-bg transition-all duration-300 shadow-md"
               aria-label="Instagram"
             >
-              <Instagram className="w-4.5 h-4.5" />
+              <Instagram className="w-4 h-4" />
             </a>
-            <a 
-              href="https://facebook.com/sucreeventcenter" 
-              target="_blank" 
-              rel="noreferrer" 
+            <a
+              href="https://www.tiktok.com/@Sucre.event.centr"
+              target="_blank"
+              rel="noreferrer"
               className="w-10 h-10 rounded-full bg-cathedral-card border border-gold-500/30 flex items-center justify-center text-gold-400 hover:bg-gold-400 hover:text-cathedral-bg transition-all duration-300 shadow-md"
-              aria-label="Facebook"
+              aria-label="TikTok"
             >
-              <Facebook className="w-4.5 h-4.5" />
+              <TikTokIcon className="w-4 h-4" />
             </a>
-            <span className="text-sm text-gold-300 font-bold ml-2">@sucreeventcenter</span>
+            <div className="flex flex-col ml-2 text-left">
+              <span className="text-xs text-gold-300 font-bold">@sucreeventcenter</span>
+              <span className="text-xs text-cathedral-muted">@Sucre.event.centr</span>
+            </div>
           </div>
         </div>
 
@@ -58,20 +69,20 @@ export default function Footer() {
             <MapPin className="w-4 h-4 text-gold-400 shrink-0" />
             <span className="text-cathedral-muted">Ilero, Ayegun Oleyo Road, Off Akala Expressway, Ibadan, Oyo State</span>
           </div>
-          
+
           <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 mt-2">
             <div className="flex items-center gap-2">
               <Phone className="w-4 h-4 text-gold-400" />
-              <a href="tel:08174303757" className="text-cathedral-muted hover:text-gold-300 transition-colors font-mono">
-                08174303757
+              <a href="tel:09058804253" className="text-cathedral-muted hover:text-gold-300 transition-colors font-mono">
+                09058804253
               </a>
             </div>
             <span className="hidden sm:inline text-cathedral-border">|</span>
             <div className="flex items-center gap-2">
               <MessageCircle className="w-4 h-4 text-emerald-400" />
-              <a 
-                href="https://wa.me/2348174303757?text=Hello%20SUCRE%20Events%20Centre,%20I%20want%20to%20inquire%20about%20booking." 
-                target="_blank" 
+              <a
+                href="https://wa.me/2349058804253?text=Hello%20SUCRE%20Events%20Centre,%20I%20want%20to%20inquire%20about%20booking."
+                target="_blank"
                 rel="noreferrer"
                 className="text-emerald-400 hover:underline"
               >
