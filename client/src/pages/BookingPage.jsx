@@ -2,7 +2,7 @@ import React from 'react';
 import { useBooking } from '../context/BookingContext';
 import { 
   Check, ChevronRight, ChevronLeft, Crown, 
-  Sparkles, Lock, MessageCircle, Wrench, Phone, ArrowUpRight, Flame, Tag, Shield
+  Sparkles, Lock, MessageCircle, Wrench, Phone, ArrowUpRight, Flame, Tag, Shield, Calendar, CheckCircle2
 } from 'lucide-react';
 
 export default function BookingPage() {
@@ -18,15 +18,11 @@ export default function BookingPage() {
     usePromoPrice,
     setUsePromoPrice,
     packages,
-    addons,
     selectedEventType,
     setSelectedEventType,
     guestCount,
     setGuestCount,
     selectedPackage,
-    setSelectedPackage,
-    selectedAddonIds,
-    toggleAddon,
     customerInfo,
     setCustomerInfo,
     calculation,
@@ -74,7 +70,7 @@ export default function BookingPage() {
       <div className="text-center space-y-3 max-w-2xl mx-auto">
         <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-gold-400/10 border border-gold-400/30 text-gold-300 text-xs uppercase tracking-widest font-semibold">
           <Sparkles className="w-3.5 h-3.5 text-gold-400" />
-          Interactive 5-Step Reservation Wizard
+          Interactive 3-Step Reservation Wizard
         </div>
         <h1 className="text-3xl md:text-5xl font-serif font-bold text-cathedral-ivory">
           Reserve Your Date at The Cathedral
@@ -82,28 +78,26 @@ export default function BookingPage() {
       </div>
 
       {/* STEP PROGRESS BAR */}
-      <div className="max-w-4xl mx-auto space-y-3 px-1">
+      <div className="max-w-3xl mx-auto space-y-3 px-1">
         {/* Mobile Active Step Indicator */}
         <div className="flex sm:hidden items-center justify-between bg-cathedral-card p-3 rounded-2xl border border-gold-500/30 text-xs">
           <span className="font-semibold text-cathedral-ivory">
-            Step {currentStep} of 5: <span className="text-gold-300 font-bold">
-              {['Event Type', 'Guests', 'Venue & Tier', 'Add-ons', 'Checkout'][currentStep - 1]}
+            Step {currentStep} of 3: <span className="text-gold-300 font-bold">
+              {['Event Details', 'Guest Capacity', 'Checkout'][currentStep - 1]}
             </span>
           </span>
           <span className="text-[10px] font-mono text-gold-400 font-bold bg-gold-400/10 px-2 py-0.5 rounded-full border border-gold-400/30">
-            {Math.round((currentStep / 5) * 100)}% Complete
+            {Math.round((currentStep / 3) * 100)}% Complete
           </span>
         </div>
 
-        <div className="flex items-center justify-between relative">
-          <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-cathedral-border -translate-y-1/2 z-0" />
+        <div className="flex items-center justify-between relative px-4">
+          <div className="absolute top-1/2 left-8 right-8 h-0.5 bg-cathedral-border -translate-y-1/2 z-0" />
           
           {[
-            { step: 1, label: 'Event Type' },
-            { step: 2, label: 'Guests' },
-            { step: 3, label: 'Venue & Tier' },
-            { step: 4, label: 'Add-ons' },
-            { step: 5, label: 'Checkout' },
+            { step: 1, label: 'Event Details' },
+            { step: 2, label: 'Guest Capacity' },
+            { step: 3, label: 'Checkout' },
           ].map((s) => {
             const isCompleted = currentStep > s.step;
             const isCurrent = currentStep === s.step;
@@ -138,18 +132,19 @@ export default function BookingPage() {
         {/* LEFT FORM STEP CONTENT (8 COLS) */}
         <div className="lg:col-span-8 bg-cathedral-card border border-cathedral-border/80 rounded-3xl p-6 sm:p-8 space-y-8 shadow-2xl">
           
-          {/* STEP 1: EVENT TYPE */}
+          {/* STEP 1: EVENT TYPE & DATE */}
           {currentStep === 1 && (
-            <div className="space-y-6">
+            <div className="space-y-8">
               <div>
                 <h2 className="text-2xl font-serif font-bold text-cathedral-ivory">
-                  Step 1: What type of event are you hosting?
+                  Step 1: Event Type & Date
                 </h2>
                 <p className="text-xs text-cathedral-muted mt-1">
-                  Select your event category so we can tailor layout seating and acoustic setup.
+                  Select your event category and requested date to begin.
                 </p>
               </div>
 
+              {/* Event Type Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {eventTypes.map((type) => {
                   const isSelected = selectedEventType === type.name;
@@ -176,6 +171,20 @@ export default function BookingPage() {
                   );
                 })}
               </div>
+
+              {/* Event Date Picker */}
+              <div className="space-y-3 pt-6 border-t border-cathedral-border">
+                <label className="text-sm font-semibold text-cathedral-ivory flex items-center gap-2">
+                  <Calendar className="w-4 h-4 text-gold-400" />
+                  Requested Event Date
+                </label>
+                <input
+                  type="date"
+                  value={customerInfo.eventDate}
+                  onChange={(e) => setCustomerInfo({ ...customerInfo, eventDate: e.target.value })}
+                  className="w-full px-5 py-4 rounded-xl bg-cathedral-elevated border border-cathedral-border text-gold-300 font-mono focus:border-gold-400 focus:outline-none transition-colors"
+                />
+              </div>
             </div>
           )}
 
@@ -184,10 +193,10 @@ export default function BookingPage() {
             <div className="space-y-8">
               <div>
                 <h2 className="text-2xl font-serif font-bold text-cathedral-ivory">
-                  Step 2: How many guests are expected?
+                  Step 2: Guest Capacity
                 </h2>
                 <p className="text-xs text-cathedral-muted mt-1">
-                  Adjust the slider or pick a range to estimate your event scale.
+                  Adjust the slider or pick a range to estimate your event scale. Max capacity is strictly 1,000 guests.
                 </p>
               </div>
 
@@ -208,14 +217,14 @@ export default function BookingPage() {
 
                 <div className="flex justify-between text-xs text-cathedral-muted font-mono">
                   <span>100 (Intimate)</span>
-                  <span>750 (Prestige)</span>
-                  <span>1,000 (Cathedral)</span>
+                  <span>500 (Classic)</span>
+                  <span>1,000 (Max Capacity)</span>
                 </div>
               </div>
 
               {/* Quick Guest Count Presets */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {[250, 500, 800, 1200].map((preset) => (
+                {[150, 400, 750, 1000].map((preset) => (
                   <button
                     key={preset}
                     onClick={() => setGuestCount(preset)}
@@ -232,22 +241,22 @@ export default function BookingPage() {
             </div>
           )}
 
-          {/* STEP 3: VENUE PRICING & PACKAGE SELECTION */}
+          {/* STEP 3: CHECKOUT — MANUAL BOOKING VIA WHATSAPP (Payment gateway under maintenance) */}
           {currentStep === 3 && (
             <div className="space-y-8">
               <div>
                 <h2 className="text-2xl font-serif font-bold text-cathedral-ivory">
-                  Step 3: Select Venue Pricing & Experience Tier
+                  Step 3: Checkout & Reservation Summary
                 </h2>
                 <p className="text-xs text-cathedral-muted mt-1">
-                  Choose your pricing option and luxury production package.
+                  Select your pricing tier, complete your details, and book your date.
                 </p>
               </div>
 
-              {/* Single Hall — Pricing Toggle */}
+              {/* Venue Pricing Toggle */}
               <div className="space-y-4">
                 <label className="text-xs font-bold uppercase tracking-widest text-gold-400 block">
-                  Venue: {flagshipHall.name}
+                  Select Venue Pricing:
                 </label>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -261,12 +270,12 @@ export default function BookingPage() {
                     }`}
                   >
                     {/* Promo ribbon */}
-                    <div className="absolute top-0 right-0 bg-red-500 text-white text-[9px] uppercase font-bold tracking-wider px-3 py-1 rounded-bl-xl">
+                    <div className="absolute top-0 right-0 bg-red-500 text-white text-[9px] uppercase font-bold tracking-wider px-3 py-1 rounded-bl-xl z-10">
                       <Flame className="w-3 h-3 inline mr-1" />
                       Save {formatCurrency(HALL_STANDARD_PRICE - HALL_PROMO_PRICE)}
                     </div>
 
-                    <div className="flex items-center gap-3 mb-3">
+                    <div className="flex items-center gap-3 mb-3 relative z-10">
                       <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
                         usePromoPrice ? 'border-gold-400 bg-gold-400' : 'border-cathedral-border'
                       }`}>
@@ -277,8 +286,8 @@ export default function BookingPage() {
                         October Promo Price
                       </div>
                     </div>
-                    <div className="text-2xl font-serif font-bold text-gold-gradient">{formatCurrency(HALL_PROMO_PRICE)}</div>
-                    <div className="text-[10px] text-cathedral-muted mt-1">Limited time — Ending October!</div>
+                    <div className="text-2xl font-serif font-bold text-gold-gradient relative z-10">{formatCurrency(HALL_PROMO_PRICE)}</div>
+                    <div className="text-[10px] text-cathedral-muted mt-1 relative z-10">Limited time — Ending October 30th!</div>
                   </div>
 
                   {/* Standard Price Option */}
@@ -304,97 +313,6 @@ export default function BookingPage() {
                     <div className="text-[10px] text-cathedral-muted mt-1">Full-rate venue rental</div>
                   </div>
                 </div>
-              </div>
-
-              {/* Single Flagship Package — Auto-Selected */}
-              <div className="space-y-3 pt-4 border-t border-cathedral-border">
-                <label className="text-xs font-bold uppercase tracking-widest text-gold-400 block">
-                  Included Package:
-                </label>
-                <div className="p-5 rounded-2xl border border-gold-400 bg-gold-500/10 shadow-gold-glow relative">
-                  <span className="text-[9px] uppercase tracking-widest font-bold text-cathedral-bg bg-gold-400 px-2.5 py-0.5 rounded-full absolute -top-2.5 left-4">
-                    {packages[0]?.badge}
-                  </span>
-                  <div className="font-serif font-bold text-base text-cathedral-ivory">{packages[0]?.name}</div>
-                  <div className="text-[11px] text-cathedral-muted mt-1">Fully included in your venue rental — no extra tier cost</div>
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {(typeof packages[0]?.features === 'string' ? JSON.parse(packages[0].features) : packages[0]?.features || []).slice(0,4).map((feat, i) => (
-                      <span key={i} className="text-[10px] bg-cathedral-elevated border border-cathedral-border rounded-full px-2.5 py-1 text-cathedral-muted flex items-center gap-1">
-                        <CheckCircle2 className="w-3 h-3 text-gold-400 shrink-0" />{feat}
-                      </span>
-                    ))}
-                    <span className="text-[10px] text-gold-400 font-bold px-2.5 py-1">+ more included</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* STEP 4: DYNAMIC ADD-ONS TOGGLE */}
-          {currentStep === 4 && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-2xl font-serif font-bold text-cathedral-ivory">
-                  Step 4: Dynamic Bespoke Add-ons
-                </h2>
-                <p className="text-xs text-cathedral-muted mt-1">
-                  Customize your event experience with gourmet catering, extra security, and media production.
-                </p>
-              </div>
-
-              <div className="space-y-3">
-                {addons.map((addon) => {
-                  const isChecked = selectedAddonIds.includes(addon.id);
-                  const calculatedCost = addon.unit === 'per guest' ? addon.price * guestCount : addon.price;
-
-                  return (
-                    <div
-                      key={addon.id}
-                      onClick={() => toggleAddon(addon.id)}
-                      className={`p-4 rounded-2xl border cursor-pointer transition-all flex items-center justify-between gap-4 ${
-                        isChecked
-                          ? 'border-gold-400 bg-gold-400/10'
-                          : 'border-cathedral-border bg-cathedral-elevated hover:border-gold-500/30'
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className={`w-6 h-6 rounded-md flex items-center justify-center border ${
-                          isChecked ? 'bg-gold-400 border-gold-400 text-cathedral-bg' : 'border-cathedral-border bg-cathedral-bg'
-                        }`}>
-                          {isChecked && <Check className="w-4 h-4 stroke-[3]" />}
-                        </div>
-                        <div>
-                          <div className="text-xs text-gold-400 uppercase tracking-widest font-semibold">{addon.category}</div>
-                          <div className="font-serif font-bold text-sm text-cathedral-ivory">{addon.name}</div>
-                          <div className="text-[11px] text-cathedral-muted">{addon.description}</div>
-                        </div>
-                      </div>
-
-                      <div className="text-right shrink-0">
-                        <div className="text-sm font-serif font-bold text-gold-gradient">
-                          +{formatCurrency(calculatedCost)}
-                        </div>
-                        <div className="text-[10px] text-cathedral-muted font-mono">
-                          {formatCurrency(addon.price)} / {addon.unit}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* STEP 5: CHECKOUT — MANUAL BOOKING VIA WHATSAPP (Payment gateway under maintenance) */}
-          {currentStep === 5 && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-2xl font-serif font-bold text-cathedral-ivory">
-                  Step 5: Complete Your Details & Book
-                </h2>
-                <p className="text-xs text-cathedral-muted mt-1">
-                  Fill in your details below, then send them directly to our contact team via WhatsApp to lock in your date.
-                </p>
               </div>
 
               {/* ── Maintenance Notice ── */}
@@ -423,7 +341,7 @@ export default function BookingPage() {
                     <div className="text-[10px] uppercase tracking-widest text-cathedral-muted font-semibold">Total Estimation</div>
                     <div className="text-xl font-serif font-bold text-cathedral-ivory mt-1">{formatCurrency(calculation?.totalAmount)}</div>
                   </div>
-                  <div className="bg-gold-400/10 rounded-xl p-3 border border-gold-400/30">
+                  <div className="bg-gold-400/10 rounded-xl p-3 border border-gold-400/30 shadow-inner">
                     <div className="text-[10px] uppercase tracking-widest text-gold-400 font-bold">Required Deposit (50%)</div>
                     <div className="text-2xl font-serif font-bold text-gold-400 mt-1">{formatCurrency(calculation?.depositAmount)}</div>
                   </div>
@@ -435,64 +353,57 @@ export default function BookingPage() {
               </div>
 
               {/* ── Customer Detail Form ── */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                <div className="space-y-1.5">
-                  <label className="font-semibold text-cathedral-ivory">Full Name / Organization</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Chief Adebayo Adeleke"
-                    value={customerInfo.name}
-                    onChange={(e) => setCustomerInfo({ ...customerInfo, name: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl bg-cathedral-elevated border border-cathedral-border text-cathedral-ivory focus:border-gold-400 focus:outline-none"
-                  />
+              <div className="space-y-4">
+                <h3 className="text-sm font-bold text-gold-400 uppercase tracking-widest border-b border-cathedral-border pb-2">Client Details</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                  <div className="space-y-1.5">
+                    <label className="font-semibold text-cathedral-ivory">Full Name / Organization</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Chief Adebayo Adeleke"
+                      value={customerInfo.name}
+                      onChange={(e) => setCustomerInfo({ ...customerInfo, name: e.target.value })}
+                      className="w-full px-4 py-3 rounded-xl bg-cathedral-elevated border border-cathedral-border text-cathedral-ivory focus:border-gold-400 focus:outline-none transition-colors"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="font-semibold text-cathedral-ivory">Email Address</label>
+                    <input
+                      type="email"
+                      placeholder="adebayo@example.com"
+                      value={customerInfo.email}
+                      onChange={(e) => setCustomerInfo({ ...customerInfo, email: e.target.value })}
+                      className="w-full px-4 py-3 rounded-xl bg-cathedral-elevated border border-cathedral-border text-cathedral-ivory focus:border-gold-400 focus:outline-none transition-colors"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5 sm:col-span-2">
+                    <label className="font-semibold text-cathedral-ivory">Phone / WhatsApp Line</label>
+                    <input
+                      type="tel"
+                      placeholder="09058804253"
+                      value={customerInfo.phone}
+                      onChange={(e) => setCustomerInfo({ ...customerInfo, phone: e.target.value })}
+                      className="w-full px-4 py-3 rounded-xl bg-cathedral-elevated border border-cathedral-border text-cathedral-ivory focus:border-gold-400 focus:outline-none transition-colors"
+                    />
+                  </div>
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="font-semibold text-cathedral-ivory">Email Address</label>
-                  <input
-                    type="email"
-                    placeholder="adebayo@example.com"
-                    value={customerInfo.email}
-                    onChange={(e) => setCustomerInfo({ ...customerInfo, email: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl bg-cathedral-elevated border border-cathedral-border text-cathedral-ivory focus:border-gold-400 focus:outline-none"
+                <div className="space-y-1.5 text-xs pt-2">
+                  <label className="font-semibold text-cathedral-ivory">Special Setup Notes / Color Theme</label>
+                  <textarea
+                    rows="3"
+                    placeholder="Mention color palette, seating arrangements, or special VIP security requirements..."
+                    value={customerInfo.notes}
+                    onChange={(e) => setCustomerInfo({ ...customerInfo, notes: e.target.value })}
+                    className="w-full px-4 py-3 rounded-xl bg-cathedral-elevated border border-cathedral-border text-cathedral-ivory focus:border-gold-400 focus:outline-none transition-colors"
                   />
                 </div>
-
-                <div className="space-y-1.5">
-                  <label className="font-semibold text-cathedral-ivory">Phone / WhatsApp Line</label>
-                  <input
-                    type="tel"
-                    placeholder="08031234567"
-                    value={customerInfo.phone}
-                    onChange={(e) => setCustomerInfo({ ...customerInfo, phone: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl bg-cathedral-elevated border border-cathedral-border text-cathedral-ivory focus:border-gold-400 focus:outline-none"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="font-semibold text-cathedral-ivory">Requested Event Date</label>
-                  <input
-                    type="date"
-                    value={customerInfo.eventDate}
-                    onChange={(e) => setCustomerInfo({ ...customerInfo, eventDate: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl bg-cathedral-elevated border border-cathedral-border text-gold-300 font-mono focus:border-gold-400 focus:outline-none"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1.5 text-xs">
-                <label className="font-semibold text-cathedral-ivory">Special Setup Notes / Color Theme</label>
-                <textarea
-                  rows="3"
-                  placeholder="Mention color palette, seating arrangements, or special VIP security requirements..."
-                  value={customerInfo.notes}
-                  onChange={(e) => setCustomerInfo({ ...customerInfo, notes: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl bg-cathedral-elevated border border-cathedral-border text-cathedral-ivory focus:border-gold-400 focus:outline-none"
-                />
               </div>
 
               {/* ── WhatsApp Booking CTA ── */}
-              <div className="space-y-3">
+              <div className="space-y-3 pt-4 border-t border-cathedral-border">
                 <a
                   id="whatsapp-book-now"
                   href={whatsAppHref}
@@ -515,13 +426,13 @@ export default function BookingPage() {
               </div>
 
               {/* Booking policy reminder */}
-              <div className="p-4 rounded-xl bg-gold-400/10 border border-gold-400/30 text-xs text-cathedral-muted space-y-1">
-                <div className="font-bold text-gold-300 flex items-center gap-1.5">
+              <div className="p-4 rounded-xl bg-gold-400/10 border border-gold-400/30 text-xs text-cathedral-muted space-y-1 text-center">
+                <div className="font-bold text-gold-300 flex items-center justify-center gap-1.5">
                   <Lock className="w-4 h-4 text-gold-400" />
                   50% Deposit Date-Lock Policy
                 </div>
                 <p>
-                  Your date is officially reserved upon receipt of a 50% deposit. Our contact team will send you payment account details immediately via WhatsApp. Remaining balance is due 14 days before your event.
+                  Your date is officially reserved upon receipt of a 50% deposit. Our contact team will send you payment account details immediately via WhatsApp.
                 </p>
               </div>
             </div>
@@ -537,7 +448,7 @@ export default function BookingPage() {
               <ChevronLeft className="w-4 h-4" /> Back
             </button>
 
-            {currentStep < 5 && (
+            {currentStep < 3 && (
               <button
                 onClick={nextStep}
                 className="px-8 py-3 rounded-full bg-gold-gradient text-cathedral-bg font-bold text-xs uppercase tracking-widest hover:brightness-110 transition-all flex items-center gap-1 shadow-md"
@@ -562,7 +473,12 @@ export default function BookingPage() {
           <div className="space-y-3 text-xs">
             <div className="flex justify-between">
               <span className="text-cathedral-muted">Event Type:</span>
-              <span className="font-semibold text-cathedral-ivory">{selectedEventType}</span>
+              <span className="font-semibold text-cathedral-ivory text-right max-w-[150px]">{selectedEventType}</span>
+            </div>
+
+            <div className="flex justify-between">
+              <span className="text-cathedral-muted">Date:</span>
+              <span className="font-mono font-semibold text-cathedral-ivory">{new Date(customerInfo.eventDate).toLocaleDateString()}</span>
             </div>
 
             <div className="flex justify-between">
@@ -575,8 +491,8 @@ export default function BookingPage() {
               <span className="font-semibold text-cathedral-ivory">{flagshipHall.name}</span>
             </div>
 
-            <div className="flex justify-between items-center">
-              <span className="text-cathedral-muted">Pricing:</span>
+            <div className="flex justify-between items-center pt-2 border-t border-cathedral-border">
+              <span className="text-cathedral-muted">Selected Pricing:</span>
               <span className="font-semibold">
                 {usePromoPrice ? (
                   <span className="inline-flex items-center gap-1.5 text-red-400">
@@ -584,19 +500,14 @@ export default function BookingPage() {
                     October Promo
                   </span>
                 ) : (
-                  <span className="text-cathedral-ivory">Standard</span>
+                  <span className="text-cathedral-ivory">Standard Rate</span>
                 )}
               </span>
             </div>
 
             <div className="flex justify-between">
-              <span className="text-cathedral-muted">Experience Tier:</span>
-              <span className="font-semibold text-cathedral-ivory">{selectedPackage?.name || 'Silver'}</span>
-            </div>
-
-            <div className="flex justify-between">
-              <span className="text-cathedral-muted">Active Add-ons:</span>
-              <span className="font-semibold text-gold-400">{selectedAddonIds.length} Extras</span>
+              <span className="text-cathedral-muted">Included Package:</span>
+              <span className="font-semibold text-cathedral-ivory text-right max-w-[150px]">{packages[0]?.name}</span>
             </div>
           </div>
 
@@ -608,11 +519,7 @@ export default function BookingPage() {
             </div>
             <div className="flex justify-between text-cathedral-muted">
               <span>Production Package:</span>
-              <span>{formatCurrency(calculation?.package?.cost)}</span>
-            </div>
-            <div className="flex justify-between text-cathedral-muted">
-              <span>Selected Extras:</span>
-              <span>{formatCurrency(calculation?.addonsTotal)}</span>
+              <span className="text-emerald-400 font-semibold">Included</span>
             </div>
             
             <div className="pt-3 border-t border-cathedral-border flex justify-between font-serif font-bold text-base text-cathedral-ivory">
@@ -631,7 +538,7 @@ export default function BookingPage() {
               <span className="font-serif font-bold text-xl text-gold-400">{formatCurrency(calculation?.depositAmount)}</span>
             </div>
             <div className="flex justify-between text-[11px] text-cathedral-muted">
-              <span>Remaining Balance (Due 14 days prior):</span>
+              <span>Remaining Balance:</span>
               <span>{formatCurrency(calculation?.balanceAmount)}</span>
             </div>
           </div>

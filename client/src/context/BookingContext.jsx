@@ -53,87 +53,18 @@ const STATIC_PACKAGES = [
   }
 ];
 
-// ─── Add-ons ──────────────────────────────────────────────────────────────────
-const STATIC_ADDONS = [
-  {
-    id: 'addon-1',
-    category: 'Catering & Dining',
-    name: 'Gourmet 3-Course Buffet & Continental Service',
-    price: 12000,
-    unit: 'per guest',
-    description: 'Extensive culinary spread by top master chefs featuring traditional Nigerian dishes, intercontinental cuisines, and dessert stations.'
-  },
-  {
-    id: 'addon-2',
-    category: 'Decoration & Lighting',
-    name: 'Signature Floral Ceiling Canopy & Ambient Intelligent Lighting',
-    price: 450000,
-    unit: 'per event',
-    description: 'Bespoke ceiling draping, imported fresh floral archways, computerized beam lights, and custom monogram projections.'
-  },
-  {
-    id: 'addon-3',
-    category: 'Audio & Entertainment',
-    name: 'Executive Live DJ & Line-Array Sound System',
-    price: 250000,
-    unit: 'per event',
-    description: 'Concert-grade sound system tuned by audio engineers with experienced event DJ and MC support.'
-  },
-  {
-    id: 'addon-4',
-    category: 'Security & Safety',
-    name: 'Executive Armed Security & Bouncers (10 Officers)',
-    price: 180000,
-    unit: 'per event',
-    description: 'Professional uniformed security personnel, access gate control, metal detectors, and motorcade parking guides.'
-  },
-  {
-    id: 'addon-5',
-    category: 'Media & Production',
-    name: '4K Cinema Videography & Aerial Drone Coverage',
-    price: 350000,
-    unit: 'per event',
-    description: 'Full-day cinematic coverage by 3 camera operators, live video mixing, highlights reel, and raw footage delivery.'
-  },
-  {
-    id: 'addon-6',
-    category: 'VIP Experience',
-    name: 'Presidential VIP Lounge & Champagne Bar',
-    price: 150000,
-    unit: 'per event',
-    description: 'Private air-conditioned retreat room with butler service, imported champagne, and private restroom facility.'
-  },
-  {
-    id: 'addon-7',
-    category: 'Power & Utility',
-    name: 'Synchronized Heavy Generator & Backup AC Unit',
-    price: 200000,
-    unit: 'per event',
-    description: 'Zero-downtime diesel power redundancy ensuring seamless AC and lighting operations throughout your event.'
-  }
-];
-
 // ─── Local calculation (used when backend is unreachable) ─────────────────────
-function localCalculate({ hallPrice, pkg, addonIds, guestCount }) {
-  const addonItems = STATIC_ADDONS.filter(a => addonIds.includes(a.id));
-  const addonsTotal = addonItems.reduce((sum, a) => {
-    return sum + (a.unit === 'per guest' ? a.price * guestCount : a.price);
-  }, 0);
-  const subtotal = (hallPrice || 0) + (pkg?.price || 0) + addonsTotal;
+function localCalculate({ hallPrice, pkg, guestCount }) {
+  const subtotal = (hallPrice || 0) + (pkg?.price || 0);
   const deposit = Math.ceil(subtotal * 0.5);
   const balance = subtotal - deposit;
   return {
     hall: { cost: hallPrice || 0 },
     package: { cost: pkg?.price || 0 },
-    addonsTotal,
     subtotal,
     totalAmount: subtotal,
     depositAmount: deposit,
     balanceAmount: balance,
-    addonsBreakdown: addonItems.map(a => ({
-      name: a.name,
-      amount: a.unit === 'per guest' ? a.price * guestCount : a.price
-    }))
   };
 }
 
@@ -143,9 +74,8 @@ const BookingContext = createContext();
 export function BookingProvider({ children }) {
   const [currentStep, setCurrentStep] = useState(1);
 
-  // Catalog — single hall, packages, addons
+  // Catalog — single hall, packages
   const [packages] = useState(STATIC_PACKAGES);
-  const [addons] = useState(STATIC_ADDONS);
   const [loadingInitial] = useState(false);
 
   // Promo pricing toggle — defaults to promo active
@@ -155,7 +85,6 @@ export function BookingProvider({ children }) {
   const [selectedEventType, setSelectedEventType] = useState('Wedding Reception');
   const [guestCount, setGuestCount] = useState(500);
   const [selectedPackage, setSelectedPackage] = useState(STATIC_PACKAGES[0]);
-  const [selectedAddonIds, setSelectedAddonIds] = useState([]);
   const [customerInfo, setCustomerInfo] = useState({
     name: '',
     email: '',
@@ -180,7 +109,7 @@ export function BookingProvider({ children }) {
         const res = await calculateBooking({
           hallId: FLAGSHIP_HALL.id,
           packageId: selectedPackage.id,
-          addonIds: selectedAddonIds,
+          addonIds: [], // Hardcoded to empty since we dropped addons
           guestCount,
         });
         setCalculation(res.data.data);
@@ -190,7 +119,6 @@ export function BookingProvider({ children }) {
           localCalculate({
             hallPrice: activeHallPrice,
             pkg: selectedPackage,
-            addonIds: selectedAddonIds,
             guestCount,
           })
         );
@@ -199,15 +127,9 @@ export function BookingProvider({ children }) {
       }
     }
     recalculate();
-  }, [activeHallPrice, selectedPackage, selectedAddonIds, guestCount]);
+  }, [activeHallPrice, selectedPackage, guestCount]);
 
-  const toggleAddon = (addonId) => {
-    setSelectedAddonIds(prev =>
-      prev.includes(addonId) ? prev.filter(id => id !== addonId) : [...prev, addonId]
-    );
-  };
-
-  const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, 5));
+  const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, 3));
   const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 1));
   const goToStep = (step) => setCurrentStep(step);
 
@@ -234,9 +156,8 @@ export function BookingProvider({ children }) {
       activeHallPrice,
       usePromoPrice,
       setUsePromoPrice,
-      // Packages & addons
+      // Packages
       packages,
-      addons,
       loadingInitial,
       // Wizard state
       selectedEventType,
@@ -245,8 +166,6 @@ export function BookingProvider({ children }) {
       setGuestCount,
       selectedPackage,
       setSelectedPackage,
-      selectedAddonIds,
-      toggleAddon,
       customerInfo,
       setCustomerInfo,
       calculation,
