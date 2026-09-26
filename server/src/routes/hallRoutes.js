@@ -1,44 +1,25 @@
 const express = require('express');
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const { db } = require('../firebaseAdmin');
 const router = express.Router();
 
-// GET /api/halls - List all halls with parsed features
 router.get('/', async (req, res) => {
   try {
-    const halls = await prisma.hall.findMany({
-      orderBy: { grade: 'asc' }
+    const snapshot = await db.collection('halls').get();
+    let halls = [];
+    snapshot.forEach(doc => {
+      halls.push({ id: doc.id, ...doc.data() });
     });
-    
-    const formattedHalls = halls.map(h => ({
-      ...h,
-      features: typeof h.features === 'string' ? JSON.parse(h.features) : h.features
-    }));
-
-    res.json({ success: true, data: formattedHalls });
+    res.json({ success: true, data: halls });
   } catch (error) {
-    console.error('Error fetching halls:', error);
     res.status(500).json({ success: false, error: 'Failed to fetch halls' });
   }
 });
 
-// GET /api/halls/:id - Get single hall by ID
 router.get('/:id', async (req, res) => {
   try {
-    const hall = await prisma.hall.findUnique({
-      where: { id: req.params.id }
-    });
-    if (!hall) {
-      return res.status(404).json({ success: false, error: 'Hall not found' });
-    }
-
-    res.json({
-      success: true,
-      data: {
-        ...hall,
-        features: typeof hall.features === 'string' ? JSON.parse(hall.features) : hall.features
-      }
-    });
+    const doc = await db.collection('halls').doc(req.params.id).get();
+    if (!doc.exists) return res.status(404).json({ success: false, error: 'Hall not found' });
+    res.json({ success: true, data: { id: doc.id, ...doc.data() } });
   } catch (error) {
     res.status(500).json({ success: false, error: 'Failed to fetch hall' });
   }

@@ -1,9 +1,7 @@
 const express = require('express');
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const { db } = require('../firebaseAdmin');
 const router = express.Router();
 
-// Helper to generate reference code
 function generateReference() {
   const randomDigits = Math.floor(1000 + Math.random() * 9000);
   return `SUCRE-2026-${randomDigits}`;
@@ -12,58 +10,29 @@ function generateReference() {
 // POST /api/bookings/calculate - Calculate cost breakdown
 router.post('/calculate', async (req, res) => {
   try {
-    const { hallId, packageId, addonIds = [], guestCount = 200 } = req.body;
+    const { guestCount = 200 } = req.body;
+    
+    // Hardcode Flagship values for the streamlined architecture
+    const hallCost = 2800000;
+    const packageCost = 0;
+    const addonsCost = 0; // stripped addons
 
-    if (!hallId || !packageId) {
-      return res.status(400).json({ success: false, error: 'hallId and packageId are required' });
-    }
-
-    const hall = await prisma.hall.findUnique({ where: { id: hallId } });
-    const pkg = await prisma.package.findUnique({ where: { id: packageId } });
-
-    if (!hall || !pkg) {
-      return res.status(404).json({ success: false, error: 'Selected Hall or Package not found' });
-    }
-
-    // Selected Addons
-    const addons = await prisma.addon.findMany({
-      where: { id: { in: addonIds } }
-    });
-
-    let addonsCost = 0;
-    const addonBreakdown = addons.map(a => {
-      const itemCost = a.unit === 'per guest' ? a.price * Number(guestCount) : a.price;
-      addonsCost += itemCost;
-      return {
-        id: a.id,
-        name: a.name,
-        unitPrice: a.price,
-        calculatedPrice: itemCost,
-        unit: a.unit
-      };
-    });
-
-    const hallCost = hall.basePrice;
-    const packageCost = pkg.price;
     const totalAmount = hallCost + packageCost + addonsCost;
-    const depositAmount = totalAmount * 0.5; // 50% deposit policy
+    const depositAmount = totalAmount * 0.5;
     const balanceAmount = totalAmount * 0.5;
 
     res.json({
       success: true,
       data: {
-        hall: { id: hall.id, name: hall.name, grade: hall.grade, cost: hallCost },
-        package: { id: pkg.id, name: pkg.name, tier: pkg.tier, cost: packageCost },
+        hall: { id: 'hall-cathedral', name: 'SUCRE Flagship Hall', cost: hallCost },
+        package: { id: 'pkg-flagship', name: 'The Cathedral All-Inclusive Package', tier: 'Flagship', cost: packageCost },
         guestCount: Number(guestCount),
-        addons: addonBreakdown,
+        addons: [],
         addonsTotal: addonsCost,
         totalAmount,
         depositAmount,
         balanceAmount,
-        policy: {
-          depositPercent: 50,
-          balanceDueDaysBefore: 14
-        }
+        policy: { depositPercent: 50, balanceDueDaysBefore: 14 }
       }
     });
   } catch (error) {
@@ -75,78 +44,42 @@ router.post('/calculate', async (req, res) => {
 // POST /api/bookings/create - Create booking record
 router.post('/create', async (req, res) => {
   try {
-    const {
-      customerName,
-      customerEmail,
-      customerPhone,
-      eventType,
-      guestCount = 200,
-      eventDate,
-      hallId,
-      packageId,
-      addonIds = [],
-      notes
-    } = req.body;
+    const { customerName, customerEmail, customerPhone, eventType, guestCount = 200, eventDate, notes } = req.body;
 
-    if (!customerName || !customerEmail || !customerPhone || !hallId || !packageId || !eventDate) {
-      return res.status(400).json({ success: false, error: 'All required customer and booking fields must be provided' });
+    if (!customerName || !customerEmail || !customerPhone || !eventDate) {
+      return res.status(400).json({ success: false, error: 'All required fields must be provided' });
     }
 
-    const hall = await prisma.hall.findUnique({ where: { id: hallId } });
-    const pkg = await prisma.package.findUnique({ where: { id: packageId } });
-
-    if (!hall || !pkg) {
-      return res.status(404).json({ success: false, error: 'Hall or Package invalid' });
-    }
-
-    // Selected Addons
-    const addons = await prisma.addon.findMany({
-      where: { id: { in: addonIds } }
-    });
-
-    let addonsCost = 0;
-    const addonDetails = addons.map(a => {
-      const price = a.unit === 'per guest' ? a.price * Number(guestCount) : a.price;
-      addonsCost += price;
-      return { addonId: a.id, price };
-    });
-
-    const totalAmount = hall.basePrice + pkg.price + addonsCost;
+    const hallCost = 2800000;
+    const totalAmount = hallCost;
     const depositAmount = totalAmount * 0.5;
     const balanceAmount = totalAmount * 0.5;
     const reference = generateReference();
 
-    const booking = await prisma.booking.create({
-      data: {
-        reference,
-        customerName,
-        customerEmail,
-        customerPhone,
-        eventType,
-        guestCount: Number(guestCount),
-        eventDate: new Date(eventDate),
-        hallId,
-        packageId,
-        totalAmount,
-        depositAmount,
-        balanceAmount,
-        status: 'PENDING',
-        notes: notes || '',
-        addons: {
-          create: addonDetails
-        }
-      },
-      include: {
-        hall: true,
-        package: true,
-        addons: { include: { addon: true } }
-      }
-    });
+    const bookingData = {
+      reference,
+      customerName,
+      customerEmail,
+      customerPhone,
+      eventType,
+      guestCount: Number(guestCount),
+      eventDate: new Date(eventDate).toISOString(),
+      hallId: 'hall-cathedral',
+      packageId: 'pkg-flagship',
+      totalAmount,
+      depositAmount,
+      balanceAmount,
+      status: 'PENDING',
+      notes: notes || '',
+      createdAt: new Date().toISOString()
+    };
+
+    const docRef = await db.collection('bookings').add(bookingData);
 
     res.json({
       success: true,
       message: 'Booking reference created successfully',
-      data: booking
+      data: { id: docRef.id, ...bookingData }
     });
   } catch (error) {
     console.error('Error creating booking:', error);
@@ -154,22 +87,17 @@ router.post('/create', async (req, res) => {
   }
 });
 
-// GET /api/bookings/:reference - Lookup booking details by reference
+// GET /api/bookings/:reference - Lookup booking
 router.get('/:reference', async (req, res) => {
   try {
-    const booking = await prisma.booking.findUnique({
-      where: { reference: req.params.reference },
-      include: {
-        hall: true,
-        package: true,
-        addons: { include: { addon: true } },
-        payments: true
-      }
-    });
-
-    if (!booking) {
+    const snapshot = await db.collection('bookings').where('reference', '==', req.params.reference).get();
+    
+    if (snapshot.empty) {
       return res.status(404).json({ success: false, error: 'Booking reference not found' });
     }
+
+    const bookingDoc = snapshot.docs[0];
+    const booking = { id: bookingDoc.id, ...bookingDoc.data() };
 
     res.json({ success: true, data: booking });
   } catch (error) {

@@ -1,8 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const { db } = require('../firebaseAdmin');
 const router = express.Router();
 
 const JWT_SECRET = process.env.JWT_SECRET || 'sucre_cathedral_super_secret_jwt_key_2026';
@@ -24,27 +23,36 @@ const verifyAdmin = (req, res, next) => {
   }
 };
 
-// POST /api/admin/login - Authenticate admin credentials
+// POST /api/admin/login
 router.post('/login', async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { username, password } = req.body; 
 
     if (!username || !password) {
-      return res.status(400).json({ success: false, error: 'Username and password are required' });
+      return res.status(400).json({ success: false, error: 'Username/Email and password are required' });
     }
 
-    const admin = await prisma.admin.findUnique({ where: { username } });
-    if (!admin) {
-      return res.status(401).json({ success: false, error: 'Invalid username or password' });
+    const adminsRef = db.collection('admins');
+    // Check if they used email or username
+    let snapshot = await adminsRef.where('email', '==', username).get();
+    if (snapshot.empty) {
+      snapshot = await adminsRef.where('username', '==', username).get();
     }
+    
+    if (snapshot.empty) {
+      return res.status(401).json({ success: false, error: 'Invalid credentials' });
+    }
+
+    const adminDoc = snapshot.docs[0];
+    const admin = adminDoc.data();
 
     const isMatch = await bcrypt.compare(password, admin.password);
     if (!isMatch) {
-      return res.status(401).json({ success: false, error: 'Invalid username or password' });
+      return res.status(401).json({ success: false, error: 'Invalid credentials' });
     }
 
     const token = jwt.sign(
-      { id: admin.id, username: admin.username, role: admin.role },
+      { id: adminDoc.id, email: admin.email, role: admin.role },
       JWT_SECRET,
       { expiresIn: '24h' }
     );
@@ -53,10 +61,9 @@ router.post('/login', async (req, res) => {
       success: true,
       token,
       admin: {
-        id: admin.id,
-        username: admin.username,
-        name: admin.name,
+        id: adminDoc.id,
         email: admin.email,
+        name: admin.name,
         role: admin.role
       }
     });
@@ -69,29 +76,44 @@ router.post('/login', async (req, res) => {
 // GET /api/admin/analytics - Return real-time revenue and booking statistics
 router.get('/analytics', verifyAdmin, async (req, res) => {
   try {
-    const allBookings = await prisma.booking.findMany();
-    const payments = await prisma.payment.findMany({ where: { status: 'SUCCESS' } });
+    const bookingsSnapshot = await db.collection('bookings').get();
+    const paymentsSnapshot = await db.collection('payments').where('status', '==', 'SUCCESS').get();
 
     let totalRevenueExpected = 0;
     let totalDepositsCollected = 0;
     let totalBalancesOutstanding = 0;
 
-    allBookings.forEach(b => {
-      totalRevenueExpected += b.totalAmount;
+    let totalCount = 0;
+    let pendingCount = 0;
+    let depositPaidCount = 0;
+    let fullyPaidCount = 0;
+    let cancelledCount = 0;
+
+    bookingsSnapshot.forEach(doc => {
+      const b = doc.data();
+      totalCount++;
+      totalRevenueExpected += b.totalAmount || 0;
+      
       if (b.status === 'DEPOSIT_PAID') {
-        totalDepositsCollected += b.depositAmount;
-        totalBalancesOutstanding += b.balanceAmount;
+        depositPaidCount++;
+        totalDepositsCollected += b.depositAmount || 0;
+        totalBalancesOutstanding += b.balanceAmount || 0;
       } else if (b.status === 'FULLY_PAID') {
-        totalDepositsCollected += b.totalAmount;
+        fullyPaidCount++;
+        totalDepositsCollected += b.totalAmount || 0;
+      } else if (b.status === 'PENDING') {
+        pendingCount++;
+      } else if (b.status === 'CANCELLED') {
+        cancelledCount++;
       }
     });
 
     const statusCounts = {
-      TOTAL: allBookings.length,
-      PENDING: allBookings.filter(b => b.status === 'PENDING').length,
-      DEPOSIT_PAID: allBookings.filter(b => b.status === 'DEPOSIT_PAID').length,
-      FULLY_PAID: allBookings.filter(b => b.status === 'FULLY_PAID').length,
-      CANCELLED: allBookings.filter(b => b.status === 'CANCELLED').length,
+      TOTAL: totalCount,
+      PENDING: pendingCount,
+      DEPOSIT_PAID: depositPaidCount,
+      FULLY_PAID: fullyPaidCount,
+      CANCELLED: cancelledCount,
     };
 
     res.json({
@@ -101,70 +123,78 @@ router.get('/analytics', verifyAdmin, async (req, res) => {
         totalDepositsCollected,
         totalBalancesOutstanding,
         statusCounts,
-        recentPaymentsCount: payments.length
+        recentPaymentsCount: paymentsSnapshot.size
       }
     });
   } catch (error) {
+    console.error('Analytics error:', error);
     res.status(500).json({ success: false, error: 'Failed to fetch analytics' });
   }
 });
 
-// GET /api/admin/bookings - Fetch list of bookings with optional status/search filters
+// GET /api/admin/bookings
 router.get('/bookings', verifyAdmin, async (req, res) => {
   try {
     const { status, search } = req.query;
 
-    let whereClause = {};
+    let query = db.collection('bookings');
+    
     if (status && status !== 'ALL') {
-      whereClause.status = status;
-    }
-    if (search) {
-      whereClause.OR = [
-        { reference: { contains: search } },
-        { customerName: { contains: search } },
-        { customerEmail: { contains: search } },
-        { customerPhone: { contains: search } }
-      ];
+      query = query.where('status', '==', status);
     }
 
-    const bookings = await prisma.booking.findMany({
-      where: whereClause,
-      include: {
-        hall: true,
-        package: true,
-        addons: { include: { addon: true } },
-        payments: true
-      },
-      orderBy: { createdAt: 'desc' }
+    const snapshot = await query.orderBy('createdAt', 'desc').get();
+    let bookings = [];
+
+    snapshot.forEach(doc => {
+      const b = doc.data();
+      // Client-side search since Firestore doesn't support full-text search out of the box
+      if (search) {
+        const s = search.toLowerCase();
+        if (
+          !(b.reference && b.reference.toLowerCase().includes(s)) &&
+          !(b.customerName && b.customerName.toLowerCase().includes(s)) &&
+          !(b.customerEmail && b.customerEmail.toLowerCase().includes(s)) &&
+          !(b.customerPhone && b.customerPhone.toLowerCase().includes(s))
+        ) {
+          return;
+        }
+      }
+      bookings.push({ id: doc.id, ...b });
     });
 
     res.json({ success: true, data: bookings });
   } catch (error) {
+    console.error('Fetch bookings error:', error);
     res.status(500).json({ success: false, error: 'Failed to fetch bookings' });
   }
 });
 
-// PUT /api/admin/bookings/:id/status - Update booking status
+// PUT /api/admin/bookings/:id/status
 router.put('/bookings/:id/status', verifyAdmin, async (req, res) => {
   try {
     const { status, notes } = req.body;
     const { id } = req.params;
 
-    const updated = await prisma.booking.update({
-      where: { id },
-      data: {
-        status,
-        ...(notes !== undefined && { notes })
-      },
-      include: { hall: true, package: true }
-    });
+    const bookingRef = db.collection('bookings').doc(id);
+    const doc = await bookingRef.get();
+    
+    if (!doc.exists) {
+      return res.status(404).json({ success: false, error: 'Booking not found' });
+    }
+
+    const updateData = { status };
+    if (notes !== undefined) updateData.notes = notes;
+
+    await bookingRef.update(updateData);
 
     res.json({
       success: true,
       message: `Booking status updated to ${status}`,
-      data: updated
+      data: { id, ...doc.data(), ...updateData }
     });
   } catch (error) {
+    console.error('Update status error:', error);
     res.status(500).json({ success: false, error: 'Failed to update booking status' });
   }
 });
